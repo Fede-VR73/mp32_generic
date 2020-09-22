@@ -1,10 +1,5 @@
 from time import sleep
 from machine import Pin
-from main.ota_updater import OTAUpdater
-
-def download_and_install_update_if_available():
-    o = OTAUpdater('url-to-your-github-project')
-    o.download_and_install_update_if_available('FRITZ!Box 7580 RU', '84757589397899114157')
 
 def blink_once():
     led = Pin(2, Pin.OUT) # defines output pin 5 for on board LED
@@ -26,8 +21,6 @@ def network_blink():
     blink_once()
     blink_once()
 
-
-
 def do_connect():
     import network
     sta_if = network.WLAN(network.STA_IF)
@@ -41,10 +34,6 @@ def do_connect():
 
 print('starting user boot...')
 start_blink()
-sleep(1)
-print('check for new firmware version in github...')
-download_and_install_update_if_available()
-sleep(5)
 print('connect to user network...')
 do_connect()
 network_blink()
