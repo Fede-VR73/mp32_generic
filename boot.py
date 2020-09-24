@@ -1,42 +1,25 @@
-from time import sleep
-from machine import Pin
+################################################################################
+# filename: ota_updater.py
+# date: 18. Sept. 2020
+# username: winkste
+# name: Stephan Wink
+# description: This module support the OTA firmware update via github repo.
+################################################################################
 
-def blink_once():
-    led = Pin(2, Pin.OUT) # defines output pin 5 for on board LED
-    led.on()
-    sleep(1)
-    led.off()
-    sleep(1)
+################################################################################
+# Imports
+from src.user_boot import do_user_boot
 
-def user_blink(loop_count):
-    i = 1
-    while i < loop_count:
-        blink_once()
-        i = i + 1
+################################################################################
+# Functions
 
-def start_blink():
-    blink_once()
+################################################################################
+# Classes
 
-def network_blink():
-    blink_once()
-    blink_once()
+    ############################################################################
+    # Member Functions
 
-def do_connect():
-    import network
-    sta_if = network.WLAN(network.STA_IF)
-    if not sta_if.isconnected():
-        print('connecting to network...')
-        sta_if.active(True)
-        sta_if.connect('FRITZ!Box 7580 RU', '84757589397899114157')
-        while not sta_if.isconnected():
-            pass
-    print('network config:', sta_if.ifconfig())
-
+################################################################################
+# Scripting
 print('starting user boot...')
-start_blink()
-print('connect to user network...')
-do_connect()
-network_blink()
-
-import webrepl
-webrepl.start()
+do_user_boot()

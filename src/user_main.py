@@ -1,25 +1,21 @@
 ################################################################################
-# filename: main.py
-# date: 18. Sept. 2020
+# filename: user_main.py
+# date: 23. Sept. 2020
 # username: winkste
 # name: Stephan Wink
-# description: This module is the original main function of all micropython apps
+# description: This module is the local project dependent main module. It is
+# expected to be called within the standard boot file in the root directory.
 ################################################################################
 
 ################################################################################
 # Imports
-from src.user_main import do_user_main
 
 ################################################################################
-# Functions
+# Methods
 
 ################################################################################
-# Classes
-
-    ############################################################################
-    # Member Functions
-
+# @brief    user main method
+# @return   none
 ################################################################################
-# Scripting
-print('starting user main...')
-do_user_main()
+def do_user_main():
+    print('user main ...')

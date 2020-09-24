@@ -1,18 +1,36 @@
-from main.ota_updater import OTAUpdater
+################################################################################
+# filename: ota_proc.py
+# date: 18. Sept. 2020
+# username: winkste
+# name: Stephan Wink
+# description: This module does the project specific OTA update processing
+################################################################################
 
-#def download_and_install_update_if_available():
-#    sleep(1)
-#    print('check for new firmware version in github...')
-#    o = OTAUpdater('https://github.com/winkste/mp32_generic')
-#    o.check_for_update_to_install_during_next_reboot()
-#    o.download_and_install_update_if_available('FRITZ!Box 7580 RU', '84757589397899114157')
-#    sleep(5)
+################################################################################
+# Imports
+from src.ota_updater import OTAUpdater
 
+################################################################################
+# Functions
+
+################################################################################
+# @brief    downloads, installs and updates to a new version available in github
+#           Precondition needed: a wifi connection to the internet
+#           When the update have been performed, the controller will be
+#           restarted
+# @return   none
+################################################################################
 def download_and_install_update_if_available():
     o = OTAUpdater('https://github.com/winkste/mp32_generic')
     if True == o.check_for_update():
         o.download_latest_released_version()
-        #o.install_update()
+        o.install_update()
 
+################################################################################
+# Classes
 
-#download_and_install_update_if_available()
+    ############################################################################
+    # Member Functions
+
+################################################################################
+# Scripting

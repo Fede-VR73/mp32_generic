@@ -5,32 +5,44 @@
 # name: Stephan Wink
 # description: This module support the OTA firmware update via github repo.
 ################################################################################
+
+################################################################################
+# Imports
 import usocket
 import os
 import gc
 import machine
-import time
+from time import sleep
 
+################################################################################
+# Functions
+
+################################################################################
+# Classes
 class OTAUpdater:
 
-################################################################################
-# @brief    constructor of the OTAUpdater object
-# @param    github_repo    link to github repository
-# @param    module      module name to update???
-# @param    main_dir    main directory, root directory
-# @return   none
-################################################################################
+    ############################################################################
+    # Member Functions
+
+    ############################################################################
+    # @brief    constructor of the OTAUpdater object
+    # @param    github_repo    link to github repository
+    # @param    module      module name to update???
+    # @param    main_dir    main directory, root directory
+    # @return   none
+    ############################################################################
     def __init__(self, github_repo, module='', main_dir='src'):
         self.http_client = HttpClient()
         self.github_repo = github_repo.rstrip('/').replace('https://github.com', 'https://api.github.com/repos')
         self.main_dir = main_dir
         self.module = module.rstrip('/')
 
-################################################################################
-# @brief    Compares the local version of the project with the latest released
-# version in the github repository.
-# @return   TRUE
-################################################################################
+    ############################################################################
+    # @brief    Compares the local version of the project with the latest
+    #           released
+    # version in the github repository.
+    # @return   TRUE
+    ############################################################################
     def check_for_update(self):
         current_version = self.get_local_version(self.modulepath(self.main_dir))
         latest_version = self.get_latest_released_version()
@@ -44,12 +56,12 @@ class OTAUpdater:
         else:
             return False
 
-################################################################################
-# @brief    Returns the version of the current installed firmware
-# @param    directory   directory of the version file
-# @param    version_file_name   file name with the content of actual version
-# @return   none
-################################################################################
+    ############################################################################
+    # @brief    Returns the version of the current installed firmware
+    # @param    directory   directory of the version file
+    # @param    version_file_name   file name with the content of actual version
+    # @return   none
+    ############################################################################
     def get_local_version(self, directory, version_file_name='.version'):
         try:
             version_file_name in os.listdir(directory)
@@ -58,14 +70,13 @@ class OTAUpdater:
             f.close()
             return version
         except OSError:
-            print('TODO: handle no version file name, create one here')
             return '0.0'
 
-################################################################################
-# @brief    Returns the latest release version of the git repository
-# @param    directory   directory of the version file
-# @return   none
-################################################################################
+    ############################################################################
+    # @brief    Returns the latest release version of the git repository
+    # @param    directory   directory of the version file
+    # @return   none
+    ############################################################################
     def get_latest_released_version(self):
         latest_release = self.http_client.get(self.github_repo + '/releases/latest')
         print('Text from json: ', latest_release.json()['tag_name'])
@@ -73,53 +84,58 @@ class OTAUpdater:
         latest_release.close()
         return version
 
-################################################################################
-# @brief    This function downloads and updates if a new version is available
-#           indicated by latest_version
-# @return   none
-################################################################################
+    ############################################################################
+    # @brief    This function downloads and updates if a new version is
+    #           available indicated by latest_version
+    # @return   none
+    ############################################################################
     def download_latest_released_version(self):
         print('Updating...')
         latest_version = self.get_latest_released_version()
+        self.rmtree('next')
         os.mkdir(self.modulepath('next'))
         self.download_all_files(self.github_repo + '/contents/' + self.main_dir, latest_version)
         with open(self.modulepath('next/.version'), 'w') as versionfile:
             versionfile.write(latest_version)
             versionfile.close()
 
-################################################################################
-# @brief    Install the latest downloaded version of the github repo
-# @return   none
-################################################################################
+    ############################################################################
+    # @brief    Install the latest downloaded version of the github repo
+    # @return   none
+    ############################################################################
     def install_update(self):
         self.rmtree(self.modulepath(self.main_dir))
         os.rename(self.modulepath('next'), self.modulepath(self.main_dir))
-        print('Update installed (', self.get_local_version(), ')')
+        #print('Update installed (', self.get_local_version(), ')')
         print('rebooting...')
         sleep(1)
         machine.reset()
 
-################################################################################
-# @brief    This function removes the existing directory structure
-# @ param   directory structure to delete
-# @return   none
-################################################################################
+    ############################################################################
+    # @brief    This function removes the existing directory structure
+    # @ param   directory structure to delete
+    # @return   true if folder was succesful removed, else false
+    ############################################################################
     def rmtree(self, directory):
-        for entry in os.ilistdir(directory):
-            is_dir = entry[1] == 0x4000
-            if is_dir:
-                self.rmtree(directory + '/' + entry[0])
+        try:
+            for entry in os.ilistdir(directory):
+                is_dir = entry[1] == 0x4000
+                if is_dir:
+                    self.rmtree(directory + '/' + entry[0])
 
-            else:
-                os.remove(directory + '/' + entry[0])
-        os.rmdir(directory)
+                else:
+                    os.remove(directory + '/' + entry[0])
+            os.rmdir(directory)
+            return True
+        except OSError:
+            return False
 
-################################################################################
-# @brief    downloads all files specified by a version in a root url
-# @param    root_url   root url of file repository
-# @param    version   version to download
-# @return   none
-################################################################################
+    ############################################################################
+    # @brief    downloads all files specified by a version in a root url
+    # @param    root_url   root url of file repository
+    # @param    version   version to download
+    # @return   none
+    ############################################################################
     def download_all_files(self, root_url, version):
         file_list = self.http_client.get(root_url + '?ref=refs/tags/' + version)
         for file in file_list.json():
@@ -134,12 +150,12 @@ class OTAUpdater:
 
         file_list.close()
 
-################################################################################
-# @brief    downloads  file specified by a uarl to a dedicated location
-# @param    url   location of file
-# @param    path   destination location of the downloaded file
-# @return   none
-################################################################################
+    ############################################################################
+    # @brief    downloads  file specified by a uarl to a dedicated location
+    # @param    url   location of file
+    # @param    path   destination location of the downloaded file
+    # @return   none
+    ############################################################################
     def download_file(self, url, path):
         print('\tDownloading: ', path)
         with open(path, 'w') as outfile:
@@ -151,11 +167,11 @@ class OTAUpdater:
                 outfile.close()
                 gc.collect()
 
-################################################################################
-# @brief    returns the absolute module path
-# @param    path   relative path to the module path
-# @return   absolute module path
-################################################################################
+    ############################################################################
+    # @brief    returns the absolute module path
+    # @param    path   relative path to the module path
+    # @return   absolute module path
+    ############################################################################
     def modulepath(self, path):
         return self.module + '/' + path if self.module else path
 
