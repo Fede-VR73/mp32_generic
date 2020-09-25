@@ -36,11 +36,11 @@ class ParamSet:
     # @return   returns the wifi ssid
     ############################################################################
     def get_wifi_ssid():
-        return('FRITZ!Box 7580 RU')
+        return('your wifi ssid')
 
     ############################################################################
     # @brief    get WIFI ssid parameter
     # @return   returns the wifi password
     ############################################################################
     def get_wifi_password():
-        return('84757589397899114157')
+        return('your wifi pwd')
