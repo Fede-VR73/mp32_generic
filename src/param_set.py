@@ -25,22 +25,26 @@ class ParamSet:
     # @param    main_dir    main directory, root directory
     # @return   none
     ############################################################################
-    def __init__(self, set_name='param', param_dir='src'):
+    def __init__(self, set_name='.sets', param_dir='param'):
         print('parameter file: ', set_name)
         print('parameter file folder: ', param_dir)
         self.set_name = set_name
         self.param_dir = param_dir
 
+
+        #self.wifi_ssid = 'your ssid'
+        #self.wifi_pwd = 'your pwd'
+
     ############################################################################
     # @brief    get WIFI ssid parameter
     # @return   returns the wifi ssid
     ############################################################################
-    def get_wifi_ssid():
-        return('your wifi ssid')
+    def get_wifi_ssid(self):
+        return(self.wifi_ssid)
 
     ############################################################################
     # @brief    get WIFI ssid parameter
     # @return   returns the wifi password
     ############################################################################
-    def get_wifi_password():
-        return('your wifi pwd')
+    def get_wifi_password(self):
+        return(self.wifi_pwd)

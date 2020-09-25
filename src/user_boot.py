@@ -59,11 +59,14 @@ def network_blink():
 ################################################################################
 def do_connect():
     import network
+    from src.param_set import ParamSet
+
+    p = ParamSet()
     sta_if = network.WLAN(network.STA_IF)
     if not sta_if.isconnected():
         print('connecting to network...')
         sta_if.active(True)
-        sta_if.connect('your ssid', 'your pwd')
+        sta_if.connect(p.get_wifi_ssid(), p.get_wifi_password())
         while not sta_if.isconnected():
             pass
     print('network config:', sta_if.ifconfig())
