@@ -63,7 +63,7 @@ def do_connect():
     if not sta_if.isconnected():
         print('connecting to network...')
         sta_if.active(True)
-        sta_if.connect('FRITZ!Box 7580 RU', '84757589397899114157')
+        sta_if.connect('your ssid', 'your pwd')
         while not sta_if.isconnected():
             pass
     print('network config:', sta_if.ifconfig())
