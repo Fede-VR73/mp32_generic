@@ -18,9 +18,10 @@ from src.ota_updater import OTAUpdater
 #           Precondition needed: a wifi connection to the internet
 #           When the update have been performed, the controller will be
 #           restarted
+# @param    github_repo     url to the github repository
 # @return   none
 ################################################################################
-def download_and_install_update_if_available():
+def download_and_install_update_if_available(github_repo):
     o = OTAUpdater('https://github.com/winkste/mp32_generic')
     if True == o.check_for_update():
         o.download_latest_released_version()

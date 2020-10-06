@@ -9,6 +9,7 @@
 
 ################################################################################
 # Imports
+import src.user_boot
 
 ################################################################################
 # Methods
@@ -19,3 +20,12 @@
 ################################################################################
 def do_user_main():
     print('user main ...')
+
+    if True == src.user_boot.repl_mode:
+        print('start repl mode...')
+        import webrepl
+        webrepl.start()
+    else:
+        print('start user mode...')
+        import webrepl
+        webrepl.start()
