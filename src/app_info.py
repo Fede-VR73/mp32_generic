@@ -55,6 +55,14 @@ class AppInfo:
     # @return   none
     ############################################################################
     def print_partnumber(self):
-        print('Firmware Partnumber: ', self.partnumber, self.qualifier, self.version)
+        complete_pn = self.partnumber + self.qualifier + self.version
+        print('Firmware Partnumber: ', complete_pn)
+
+    ############################################################################
+    # @brief    prints the description string of the application
+    # @return   none
+    ############################################################################
+    def print_descrption(self):
+        print('Firmware Description: ', self.description)
 ################################################################################
 # Methods

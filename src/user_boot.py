@@ -13,7 +13,7 @@
 from src.ota_proc import download_and_install_update_if_available
 from src.param_set import ParamSet
 from src.user_pins import UserPins
-from umqtt.simple import MQTTClient
+from src.user_mqtt import start_mqtt_client
 from src.app_info import AppInfo
 import network
 
@@ -31,7 +31,7 @@ mqtt_client = None
 # @param    password    the password to connect tot the wifi station
 # @return   none
 ################################################################################
-def connect_to_wifi_netowork(ssid, password):
+def connect_to_wifi_network(ssid, password):
 
     sta_if = network.WLAN(network.STA_IF)
     if not sta_if.isconnected():
@@ -43,20 +43,6 @@ def connect_to_wifi_netowork(ssid, password):
         while not sta_if.isconnected():
             pass
     print('network config:', sta_if.ifconfig())
-
-################################################################################
-# @brief    connects to the mqtt broker according to the settings
-# @param    client_id       client id
-# @param    broker_ip       broker ip address
-# @param    broker_port     broker ip port
-# @param    broker_user     broker user identifier
-# @param    broker_pwd      broker user password
-# @return   none
-################################################################################
-def connect_to_mqtt(client_id, broker_ip, broker_port, broker_user, broker_pwd):
-    global mqtt_client
-    mqtt_client = MQTTClient(client_id, broker_ip, broker_port, broker_user, broker_pwd)
-    mqtt_client.connect()
 
 ################################################################################
 # @brief    user boot function
@@ -72,10 +58,10 @@ def do_user_boot():
     pinStateHigh = pins.sample_repl_req_low_state()
     if 50 < pinStateHigh:
         repl_mode = True
-        print('repl detected...')
+        print('repl request detected...')
     else:
         repl_mode = False
-        print('user detected...')
+        print('standard user detected...')
     pins.led_off()
 
     print('initialize parameter sets...')
@@ -84,13 +70,14 @@ def do_user_boot():
     print('print firmware identification...')
     app = AppInfo()
     app.print_partnumber()
+    app.print_descrption
 
     print('connect to user network...')
-    connect_to_wifi_netowork(para.get_wifi_ssid(), para.get_wifi_password())
+    connect_to_wifi_network(para.get_wifi_ssid(), para.get_wifi_password())
+
     print('check for a new firmware version on github...')
     download_and_install_update_if_available(para.get_gitHub_repo())
-    print('connect to mqtt broker...')
-    connect_to_mqtt(para.get_mqtt_client_id(), para.get_mqtt_broker_ip(),
-                        para.get_mqtt_broker_port(), para.get_mqtt_broker_user(),
-                        para.get_mqtt_broker_pwd())
-    mqtt_client.publish(b"foo_topic", b"hello")
+
+    print('start the webrepl...')
+    import webrepl
+    webrepl.start()
