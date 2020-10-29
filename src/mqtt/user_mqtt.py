@@ -12,6 +12,8 @@
 from umqtt.simple import MQTTClient
 from umqtt.simple import MQTTException
 from time import sleep
+from src.mqtt.user_subs import UserSubs
+from src.mqtt.user_subs import set_mqtt_subscribe_cb
 
 ################################################################################
 # Variables
@@ -37,6 +39,7 @@ def start_mqtt_client(id, ip, port, user, pwd):
     try:
         client.set_callback(subs_callback)
         client.connect()
+        set_mqtt_subscribe_cb(subscribe)
     except AttributeError:
         print('mqtt client allocation failed...')
     except MQTTException:
@@ -68,7 +71,7 @@ def publish(topic, payload):
     try:
         client.publish(topic, payload)
     except AttributeError:
-        print('mqtt client not allicated...')
+        print('mqtt client not allocated...')
     except OSError:
         print('mqtt connection error in publish...')
 
@@ -81,7 +84,9 @@ def publish(topic, payload):
 def subs_callback(topic, data):
     print('Topic received:', topic)
     print('Data received:', data)
-    client.check_subscriptions(topic, data)
+    topic_string = topic.decode('utf-8')
+    data_string = data.decode('utf-8')
+    client.check_subscriptions(topic_string, data_string)
 
 ################################################################################
 # @brief    This function subscribes for a topic and registers a callback
@@ -90,13 +95,13 @@ def subs_callback(topic, data):
 # @param    cb_func callback function when topic arrives
 # @return   none
 ################################################################################
-def subscribe(topic, cb_func):
+def subscribe(user_subs):
     global client
 
     try:
-        client.subscribe(topic, cb_func)
+        client.subscribe(user_subs)
     except AttributeError:
-        print('mqtt client not allicated...')
+        print('mqtt client not allocated...')
     except OSError:
         print('mqtt connection error in subscribe...')
 
@@ -120,52 +125,11 @@ def check_non_blocking_for_msg():
         client.check_non_blocking_for_msg()
         return True
     except AttributeError:
-        print('mqtt client not allicated...')
+        print('mqtt client not allocated...')
         return False
     except OSError:
         print('mqtt connection error in check_non_blocking_for_msg...')
         return False
-
-################################################################################
-# @brief    This is a subscription callback test function
-# @param    topic   topic identifier of the messsage
-# @param    cb_func callback function when topic arrives
-# @return   none
-################################################################################
-def test_function1(topic, data):
-    print('--- Test Function 1 ---')
-    print('Topic received:', topic)
-    print('Data received:', data)
-
-################################################################################
-# @brief    This is a subscription callback test function
-# @param    topic   topic identifier of the messsage
-# @param    cb_func callback function when topic arrives
-# @return   none
-################################################################################
-def test_function2(topic, data):
-    print('--- Test Function 2 ---')
-    print('Topic received:', topic)
-    print('Data received:', data)
-
-################################################################################
-# @brief    This is the main test funcion to test all features of this module
-# @return   none
-################################################################################
-def test_main():
-    start_mqtt_client('umqtt_client', '192.168.178.45', 1883, 'winkste', 'sw10950')
-    publish(b'test_pub', b'test data')
-    subscribe(b'test_sub1', test_function1)
-    subscribe(b'test_sub2', test_function2)
-    subscribe(b'test_sub1', test_function2)
-    print_all_subscriptions()
-
-    while check_non_blocking_for_msg():
-        # Non-blocking wait for message
-
-        # Then need to sleep to avoid 100% CPU usage (in a real
-        # app other useful actions would be performed instead)
-        sleep(1)
 
 ################################################################################
 # Classes
@@ -244,13 +208,13 @@ class UserMqtt:
     ############################################################################
     # @brief    This function subscribes for a topic message and registers a
     #           callback function
-    # @param    topic   topic identifier of the messsage
-    # @param    cb_func callback function when topic arrives
+    # @param    user_subs   user subscription object including the topic and
+    #                       callback
     # @return   none
     ############################################################################
-    def subscribe(self, topic, cb_func):
-        self.subscriptions.append(UserSubs(topic, cb_func))
-        self.mqtt_client.subscribe(topic)
+    def subscribe(self, user_subs):
+        self.subscriptions.append(user_subs)
+        self.mqtt_client.subscribe(user_subs.topic)
 
     ############################################################################
     # @brief    This function subscribes for a topic message and registers a
@@ -262,7 +226,7 @@ class UserMqtt:
     def check_subscriptions(self, topic, payload):
         for obj in self.subscriptions:
             if topic == obj.topic:
-                obj.cb_func(topic, payload)
+                obj.callback_on_arrived_topic(topic, payload)
 
     ############################################################################
     # @brief    This function prints all registered subsciptions
@@ -280,29 +244,7 @@ class UserMqtt:
     def check_non_blocking_for_msg(self):
         self.mqtt_client.check_msg()
 
-
-class UserSubs:
-
-    ############################################################################
-    # Member Attributes
-    topic = ''
-    cb_func = None
-
-    ############################################################################
-    # Member Functions
-
-    ############################################################################
-    # @brief    initializes the Subscription object
-    # @param    topic       topic of message
-    # @param    cb_func     callback function to be called if message arrives
-    # @return   none
-    #############################################################################
-    def __init__(self, topic, cb_func):
-        self.topic = topic
-        self.cb_func = cb_func
-
 ################################################################################
 # Scripts
 if __name__ == "__main__":
-    # execute only if run as a script
-    test_main()
+    print("--- user_mqtt test script ---")

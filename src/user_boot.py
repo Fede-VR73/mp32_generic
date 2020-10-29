@@ -13,8 +13,9 @@
 from src.ota_proc import download_and_install_update_if_available
 from src.param_set import ParamSet
 from src.user_pins import UserPins
-from src.user_mqtt import start_mqtt_client
+from src.mqtt.user_mqtt import start_mqtt_client
 from src.app_info import AppInfo
+import esp
 import network
 
 ################################################################################
@@ -49,10 +50,11 @@ def connect_to_wifi_network(ssid, password):
 # @return   none
 ################################################################################
 def do_user_boot():
+    global repl_mode
 
     print('user boot...')
+    esp.osdebug(None)
 
-    global repl_mode
     pins = UserPins()
     pins.led_on()
     pinStateHigh = pins.sample_repl_req_low_state()

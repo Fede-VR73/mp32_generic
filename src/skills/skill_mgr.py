@@ -9,34 +9,45 @@
 
 ################################################################################
 # Imports
-
+from src.skills.abs_skill import AbstractSkill
+from src.skills.gen_skill import GenSkill
 ################################################################################
 # Variables
-
+skill = None
 ################################################################################
 # Functions
 ################################################################################
-# @brief    Initializes and starts the device manager
+# @brief    Initializes and starts the skill manager
 # @param    id       device id
 # @param    cap      capability
 # @return   none
 ################################################################################
-def start_device_manager(id, cap):
-    print("device manager started...")
+def start_skill_manager(id, cap):
+    global skill
+
+    skill = GenSkill(id, "0")
+    skill.start_skill()
+    print("skill manager started...")
 
 ################################################################################
-# @brief    Executes the configured devices
+# @brief    Executes the configured skill
 # @return   none
 ################################################################################
-def stop_device_manager():
-    print("device manager stopped...")
+def stop_skill_manager():
+    global skill
+
+    skill.stop_skill
+    print("skill manager stopped...")
 
 ################################################################################
-# @brief    Stops the device manager
+# @brief    Executes the skill manager
 # @return   none
 ################################################################################
-def execute_devices():
-    print("executes the devices...")
+def execute_skills():
+    global skill
+    
+    skill.execute_skill
+    print("executes the skills...")
 
 ################################################################################
 # Classes
@@ -45,6 +56,6 @@ def execute_devices():
 # Scripts
 if __name__ == "__main__":
     # execute only if run as a script
-    start_device_manager("dev01", 0x20)
-    execute_devices()
-    stop_device_manager()
+    start_skill_manager("dev01", 0x20)
+    execute_skills()
+    stop_skill_manager()

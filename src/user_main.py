@@ -10,13 +10,13 @@
 ################################################################################
 # Imports
 import src.user_boot
-from src.user_mqtt import check_non_blocking_for_msg
-from src.user_mqtt import start_mqtt_client
-from src.user_mqtt import stop_mqtt_client
+from src.mqtt.user_mqtt import check_non_blocking_for_msg
+from src.mqtt.user_mqtt import start_mqtt_client
+from src.mqtt.user_mqtt import stop_mqtt_client
 from time import sleep
 from src.user_pins import UserPins
 from src.param_set import ParamSet
-import src.device_mgr as device_mgr
+import src.skills.skill_mgr as skill_mgr
 ################################################################################
 # Methods
 
@@ -34,7 +34,7 @@ def do_user_initialize():
                         para.get_mqtt_broker_pwd())
 
     print('startup the configured devices...')
-    device_mgr.start_device_manager(para.get_device_id(), para.get_capability())
+    skill_mgr.start_skill_manager(para.get_device_id(), para.get_capability())
 
 
 ################################################################################
@@ -43,14 +43,14 @@ def do_user_initialize():
 ################################################################################
 def do_user_processes():
     check_non_blocking_for_msg()
-    device_mgr.execute_devices()
+    skill_mgr.execute_skills()
 
 ################################################################################
 # @brief    stop user processes
 # @return   none
 ################################################################################
 def stop_user_processes():
-    device_mgr.stop_device_manager()
+    skill_mgr.stop_skill_manager()
     stop_mqtt_client()
 
 
