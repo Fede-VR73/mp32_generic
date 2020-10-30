@@ -13,7 +13,8 @@ from src.skills.abs_skill import AbstractSkill
 from src.skills.gen_skill import GenSkill
 ################################################################################
 # Variables
-skill = None
+active_skills = []
+
 ################################################################################
 # Functions
 ################################################################################
@@ -23,10 +24,11 @@ skill = None
 # @return   none
 ################################################################################
 def start_skill_manager(id, cap):
-    global skill
 
     skill = GenSkill(id, "0")
     skill.start_skill()
+    active_skills.append(skill)
+    print("skill: " + skill.get_skill_name() + " started")
     print("skill manager started...")
 
 ################################################################################
@@ -34,9 +36,9 @@ def start_skill_manager(id, cap):
 # @return   none
 ################################################################################
 def stop_skill_manager():
-    global skill
 
-    skill.stop_skill
+    for obj in active_skills:
+        obj.stop_skill()
     print("skill manager stopped...")
 
 ################################################################################
@@ -44,9 +46,9 @@ def stop_skill_manager():
 # @return   none
 ################################################################################
 def execute_skills():
-    global skill
-    
-    skill.execute_skill
+
+    for obj in active_skills:
+        obj.execute_skill()
     print("executes the skills...")
 
 ################################################################################

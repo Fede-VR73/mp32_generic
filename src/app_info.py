@@ -59,10 +59,34 @@ class AppInfo:
         print('Firmware Partnumber: ', complete_pn)
 
     ############################################################################
+    # @brief    Getter function for the firmware identifier
+    # @return   the firmware identification string
+    ############################################################################
+    def get_fw_identifier(self):
+        fw_ident = self.partnumber + self.qualifier
+        return fw_ident
+
+    ############################################################################
+    # @brief    Getter function for the firmware version
+    # @return   the firmware version
+    ############################################################################
+    def get_fw_version(self):
+        return self.version
+
+    ############################################################################
     # @brief    prints the description string of the application
     # @return   none
     ############################################################################
     def print_descrption(self):
         print('Firmware Description: ', self.description)
+
+    ############################################################################
+    # @brief    Getter function for the firmware description
+    # @return   the description string of the application
+    ############################################################################
+    def get_description(self):
+        return self.description
+
+
 ################################################################################
 # Methods

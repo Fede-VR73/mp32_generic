@@ -14,6 +14,8 @@ from umqtt.simple import MQTTException
 from time import sleep
 from src.mqtt.user_subs import UserSubs
 from src.mqtt.user_subs import set_mqtt_subscribe_cb
+from src.mqtt.user_pubs import UserPubs
+from src.mqtt.user_pubs import set_mqtt_publish_cb
 
 ################################################################################
 # Variables
@@ -40,6 +42,7 @@ def start_mqtt_client(id, ip, port, user, pwd):
         client.set_callback(subs_callback)
         client.connect()
         set_mqtt_subscribe_cb(subscribe)
+        set_mqtt_publish_cb(publish)
     except AttributeError:
         print('mqtt client allocation failed...')
     except MQTTException:
@@ -67,9 +70,11 @@ def stop_mqtt_client():
 ################################################################################
 def publish(topic, payload):
     global client
+    byte_topic = topic.encode('utf-8')
+    byte_payload = payload.encode('utf-8')
 
     try:
-        client.publish(topic, payload)
+        client.publish(byte_topic, byte_payload)
     except AttributeError:
         print('mqtt client not allocated...')
     except OSError:

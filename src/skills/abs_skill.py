@@ -9,6 +9,7 @@
 
 ################################################################################
 # Imports
+import time
 
 ################################################################################
 # Variables
@@ -18,8 +19,16 @@
 
 ################################################################################
 # Classes
+################################################################################
+# @brief    This class defines the abstract skill blueprint. All following
+#           will derive from this to have a common interface.
+################################################################################
 class AbstractSkill:
 
+    ############################################################################
+    # Member Attributes
+    skill_name = "abstract skill"
+    last_time = 0
     ############################################################################
     # Member Functions
 
@@ -32,6 +41,14 @@ class AbstractSkill:
     def __init__(self, dev_id, skill_entity = '0'):
         self.dev_id = dev_id
         self.skill_entity = skill_entity
+        self.last_time = time.ticks_ms()
+
+    ############################################################################
+    # @brief    Getter function for the skill name
+    # @return   none
+    ############################################################################
+    def get_skill_name(self):
+        return self.skill_name
 
     ############################################################################
     # @brief    starts the skill
@@ -55,7 +72,7 @@ class AbstractSkill:
     ############################################################################
     def execute_subscription(self, topic, payload):
         print("subscription " + topic + " for device: " + self.dev_id + " received")
-
+        print("payload: " + payload)
     ############################################################################
     # @brief    stopps the skill
     # @return   none

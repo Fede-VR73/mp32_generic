@@ -20,17 +20,13 @@ from src.skills.abs_skill import AbstractSkill
 # Functions
 # Variables
 # mqtt subscription variable
-cb_subscribe = None
+subscribe_cb = None
 
 ################################################################################
 # Functions
 ################################################################################
-# @brief    Initializes the mqtt client and connects to the mqtt broker
-# @param    id       client id
-# @param    ip       broker ip address
-# @param    port     broker ip port
-# @param    user     broker user identifier
-# @param    pwd      broker user password
+# @brief    Set the callback function for mqtt subscription handing
+# @param    subs_cb     callback function for the general subscription handling
 # @return   none
 ################################################################################
 def set_mqtt_subscribe_cb(subs_cb):
