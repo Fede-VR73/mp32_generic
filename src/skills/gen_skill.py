@@ -35,7 +35,9 @@ class GenSkill(AbstractSkill):
     pub_fw_version = None
     pub_fw_desc = None
     app_info = None
-    EXECUTION_PERIOD = 500
+    EXECUTION_PERIOD = 5000
+    health_counter = 0
+    pub_health_counter = None
     ############################################################################
     # Member Functions
 
@@ -54,6 +56,8 @@ class GenSkill(AbstractSkill):
         self.pub_fw_desc = UserPubs("gen/fwdesc", dev_id)
         self.app_info = AppInfo()
         self.skill_name = "generic skill"
+        self.pub_health_counter = UserPubs("health/tic", dev_id)
+        self.health_counter = 0
 
     ############################################################################
     # @brief    starts the skill
@@ -70,11 +74,10 @@ class GenSkill(AbstractSkill):
     ############################################################################
     def execute_skill(self):
         current_time = time.ticks_ms()
-        print("last time: " + str(self.last_time))
-        print("current time: " + str(current_time))
-        print("diff: " + str(abs(time.ticks_diff(current_time, self.last_time))))
         if abs(time.ticks_diff(current_time, self.last_time)) > self.EXECUTION_PERIOD:
             self.last_time = current_time
+            self.health_counter = self.health_counter + 1
+            self.pub_health_counter.publish(str(self.health_counter))
             super().execute_skill()
 
     ############################################################################
