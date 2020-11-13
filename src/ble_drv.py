@@ -46,26 +46,6 @@ _central = None
 # Functions
 
 ################################################################################
-# @brief    This function starts the bluetppth scanner service.
-# @return   none
-################################################################################
-def ble_drv_start():
-    global _central
-    print('start the bluetooth driver')
-    ble = bluetooth.BLE()
-    _central = BleDriver(ble)
-    _central.scan_for_devices()
-
-################################################################################
-# @brief    This function stops the bluetooth scanner service
-# @return   none
-################################################################################
-def ble_drv_stop():
-    global _central
-    print('stop the bluetooth driver')
-    _central.stop_scan()
-
-################################################################################
 # @brief    This function appends a listener object to get notified if a message
 #               from a dedicated source arrives
 # @param    filter   filter mask and callback function objects
@@ -73,8 +53,32 @@ def ble_drv_stop():
 ################################################################################
 def ble_append_listener(filter):
     global _central
+
+    #check if we need to start the driver first
+    if(None == _central):
+        print('start the bluetooth driver')
+        ble = bluetooth.BLE()
+        _central = BleDriver(ble)
+        _central.scan_for_devices()
+
     print('append filter: ' + str(filter))
     _central.append_listener(filter)
+
+################################################################################
+# @brief    This function removes a listener object from the ble driver
+# @param    filter   filter mask and callback function objects
+# @return   none
+################################################################################
+def ble_remove_listener(filter):
+    global _central
+
+    if(None != _central):
+        print('remove filter: ' + str(filter))
+        _central.remove_listener(filter)
+        if(0 == _central.get_number_of_filters()):
+            print('stop the bluetooth driver')
+            _central.stop_scan()
+            _central = None
 
 ################################################################################
 # @brief    This function is used for the internal test scripting as callback
@@ -108,12 +112,13 @@ class BleDriver:
     # Member Variables
     _ble = None
     _filter = []
+    _scan_active = False
 
     ############################################################################
     # Member Functions
     ############################################################################
     # @brief    constructor of the BleDriver class
-    # @param    ble     bluetppth object
+    # @param    ble         bluetppth object
     # @return   none
     ############################################################################
     def __init__(self, ble):
@@ -127,6 +132,7 @@ class BleDriver:
     ############################################################################
     def stop_scan(self):
         self._ble.gap_scan(None, 30000, 30000, False)
+        self._scan_active = False
 
     ############################################################################
     # @brief    This function allows the appending of listener objects to listen
@@ -136,6 +142,27 @@ class BleDriver:
     ############################################################################
     def append_listener(self, filter):
         self._filter.append(filter)
+
+    ############################################################################
+    # @brief    This function returns the number of active listeners
+    # @param    ble     bluetppth object
+    # @return   number of elements in the listener list
+    ############################################################################
+    def get_number_of_filters(self):
+        return len(self._filter)
+
+    ############################################################################
+    # @brief    This function will remove the listener
+    # @param    ble     bluetppth object
+    # @return   none
+    ############################################################################
+    def remove_listener(self, filter):
+        for obj in self._filter:
+            if(     (obj.name == filter.name)
+                and (obj.addr_filter == filter.addr_filter)
+                and (obj.msg_callback == filter.msg_callback)):
+                self._filter.remove(obj)
+                print('removed: ' + str(filter))
 
     ############################################################################
     # @brief    This function is the callback for a received scan result
@@ -158,11 +185,10 @@ class BleDriver:
     ############################################################################
     def scan_for_devices(self):
         self.stop_scan()
-        self._addr_type = None
-        self._addr = None
         self._ble.irq(self._ble_scanner_irq)
         #self._ble.gap_scan(10000, 500000, 500000, False)
         self._ble.gap_scan(0, 500000, 500000, False)
+        self._scan_active = True
 
 ################################################################################
 # @brief    This class defines the listener object for the bluetooth driver
@@ -201,12 +227,13 @@ class BleListener:
 # Scripts
 if __name__ == "__main__":
     print('--- ble_driver script -------')
-    ble_drv_start()
     filter = BleListener("Badezimmer oben", _test_callback, bytearray([0x58, 0x2d, 0x34, 0x38, 0x64, 0x37]))
     ble_append_listener(filter)
     filter2 = BleListener("Badezimmer unten", _test_callback, bytearray([0x58, 0x2D, 0x34, 0x37, 0x10, 0x86]))
     ble_append_listener(filter2)
-    filter3 = BleListener("ALL", _test_callback)
-    ble_append_listener(filter3)
-    time.sleep(5)
-    ble_drv_stop()
+    #filter3 = BleListener("ALL", _test_callback)
+    #ble_append_listener(filter3)
+    time.sleep(50)
+    ble_remove_listener(filter)
+    ble_remove_listener(filter2)
+    #ble_remove_listener(filter3)

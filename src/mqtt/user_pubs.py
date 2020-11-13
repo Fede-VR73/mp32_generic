@@ -53,10 +53,15 @@ class UserPubs:
     # @param    topic           topic of message
     # @param    device          mqtt bus defice identificaiton
     # @param    channel         channel to transfer the topic to
+    # @param    skill_entity    skill entity number if multiple instances of a
+    #                           skill is used in one deviece
     # @return   none
     ############################################################################
-    def __init__(self, topic, device, channel = 'std'):
-        self.topic = channel + "/" + device + "/s/" + topic
+    def __init__(self, topic, device, channel = 'std', skill_entity=None):
+        if(None == skill_entity):
+            self.topic = channel + "/" + device + "/s/" + topic
+        else:
+            self.topic = channel + "/" + device + "/s/" +skill_entity +"/"+ topic
         self.payload = ''
 
     ############################################################################

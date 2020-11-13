@@ -49,7 +49,8 @@ class GenSkill(AbstractSkill):
     ############################################################################
     def __init__(self, dev_id, skill_entity):
         super().__init__(dev_id, skill_entity)
-        self.device_info_request = UserSubs(dev_id + "/any/topic/test", self)
+        self._skill_name = "gen skill"
+        self.device_info_request = UserSubs(self, "any/topic/test", dev_id, "std", skill_entity)
         self.device_info_request.subscribe()
         self.pub_fw_ident = UserPubs("gen/fwident", dev_id)
         self.pub_fw_version = UserPubs("gen/fwversion", dev_id)
@@ -74,8 +75,8 @@ class GenSkill(AbstractSkill):
     ############################################################################
     def execute_skill(self):
         current_time = time.ticks_ms()
-        if abs(time.ticks_diff(current_time, self.last_time)) > self.EXECUTION_PERIOD:
-            self.last_time = current_time
+        if abs(time.ticks_diff(current_time, self._last_time)) > self.EXECUTION_PERIOD:
+            self._last_time = current_time
             self.health_counter = self.health_counter + 1
             self.pub_health_counter.publish(str(self.health_counter))
             super().execute_skill()

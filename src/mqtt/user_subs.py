@@ -52,16 +52,24 @@ class UserSubs:
     # Member Functions
 
     ############################################################################
-    # @brief    initializes the Subscription object
-    # @param    topic       topic of message
-    # @param    abs_skill   abstract skill to connect to when an subscribed
-    #                       topic arrives
+    # @brief    initializes the Publication object
+    # @param    abs_skill       abstract skill to connect to when an subscribed
+    #                           topic arrives
+    # @param    topic           topic of message
+    # @param    device          mqtt bus defice identificaiton
+    # @param    channel         channel to transfer the topic to
+    # @param    skill_entity    skill entity number if multiple instances of a
+    #                           skill is used in one deviece
     # @return   none
     ############################################################################
-    def __init__(self, topic, abs_skill):
-        self.topic = topic
+    def __init__(self, abs_skill, topic, device, channel = 'std', skill_entity=None):
+        if(None == skill_entity):
+            self.topic = channel + "/" + device + "/r/" + topic
+        else:
+            self.topic = channel + "/" + device + "/r/" +skill_entity +"/"+ topic
         self.last_payload = b''
         self.abs_skill = abs_skill
+        print(self.topic)
 
     ############################################################################
     # @brief    this function subscribes the topic specified in the object
