@@ -14,6 +14,7 @@ from src.skills.abs_skill import AbstractSkill
 from src.mqtt.user_subs import UserSubs
 from src.mqtt.user_pubs import UserPubs
 from src.app_info import AppInfo
+import src.trace as T
 
 ################################################################################
 # Variables
@@ -79,7 +80,6 @@ class GenSkill(AbstractSkill):
             self._last_time = current_time
             self.health_counter = self.health_counter + 1
             self.pub_health_counter.publish(str(self.health_counter))
-            super().execute_skill()
 
     ############################################################################
     # @brief    executes the incoming subscription callback handler
@@ -99,6 +99,8 @@ class GenSkill(AbstractSkill):
 
 ################################################################################
 # Scripts
+T.configure(__name__, T.INFO)
+
 if __name__ == "__main__":
     # execute only if run as a script
     dev = GenSkill('dev01', '0')

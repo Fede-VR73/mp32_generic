@@ -10,6 +10,7 @@
 
 ################################################################################
 # Imports
+import src.trace as T
 
 ################################################################################
 # Variables
@@ -72,10 +73,12 @@ class UserPubs:
     def publish(self, payload = ''):
         self.payload = payload
         publish_cb(self.topic, self.payload)
-        print("published: " + self.topic + " with payload: " + payload)
+        T.trace(__name__, T.DEBUG, "published: " + self.topic + " with payload: " + payload)
 
 ################################################################################
 # Scripts
+T.configure(__name__, T.INFO)
+
 if __name__ == "__main__":
     # execute only if run as a script
     print("--- test script for user_pubs ---")

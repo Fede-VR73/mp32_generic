@@ -10,6 +10,7 @@
 ################################################################################
 # Imports
 import time
+import src.trace as T
 
 ################################################################################
 # Variables
@@ -58,14 +59,14 @@ class AbstractSkill:
     # @return   none
     ############################################################################
     def start_skill(self):
-        print("device " + self._skill_name + " started...")
+        T.trace(__name__, T.DEBUG, "device " + self._skill_name + " started...")
 
     ############################################################################
     # @brief    executes the skill cyclic task
     # @return   none
     ############################################################################
     def execute_skill(self):
-        print("execute " + self._skill_name)
+        T.trace(__name__, T.DEBUG, "execute " + self._skill_name)
 
     ############################################################################
     # @brief    executes the incoming subscription callback handler
@@ -74,14 +75,16 @@ class AbstractSkill:
     # @return   none
     ############################################################################
     def execute_subscription(self, topic, payload):
-        print("subscription " + topic + " for device: " + self._dev_id + " received")
-        print("payload: " + payload)
+        T.trace(__name__, T.DEBUG, "subscription " + topic + " for device: " + self._dev_id + " received")
+        T.trace(__name__, T.DEBUG, "payload: " + payload)
     ############################################################################
     # @brief    stopps the skill
     # @return   none
     ############################################################################
     def stop_skill(self):
-        print("stop " + self._skill_name)
+        T.trace(__name__, T.DEBUG, "stop " + self._skill_name)
 
 ################################################################################
 # Scripts
+
+T.configure(__name__, T.DEBUG)

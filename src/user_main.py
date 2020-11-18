@@ -17,6 +17,7 @@ from time import sleep
 from src.user_pins import UserPins
 from src.param_set import ParamSet
 import src.skills.skill_mgr as skill_mgr
+import src.trace as T
 ################################################################################
 # Methods
 
@@ -25,15 +26,15 @@ import src.skills.skill_mgr as skill_mgr
 # @return   none
 ################################################################################
 def do_user_initialize():
-    print('initialize parameter sets...')
+    T.trace(__name__, T.DEBUG, 'initialize parameter sets...')
     para = ParamSet()
 
-    print('connect to mqtt broker...')
+    T.trace(__name__, T.DEBUG, 'connect to mqtt broker...')
     start_mqtt_client(para.get_mqtt_client_id(), para.get_mqtt_broker_ip(),
                         para.get_mqtt_broker_port(), para.get_mqtt_broker_user(),
                         para.get_mqtt_broker_pwd())
 
-    print('startup the configured devices...')
+    T.trace(__name__, T.DEBUG, 'startup the configured devices...')
     skill_mgr.start_skill_manager(para.get_device_id(), para.get_capability())
 
 
@@ -59,11 +60,13 @@ def stop_user_processes():
 # @return   none
 ################################################################################
 def do_user_main():
+
+    T.configure(__name__, T.INFO)
     pins = UserPins()
-    print('user main ...')
+    T.trace(__name__, T.INFO, 'user main ...')
 
     if True != src.user_boot.repl_mode:
-        print('user mode...')
+        T.trace(__name__, T.DEBUG, 'user mode...')
         do_user_initialize()
         #checks the repl pin every task cycle for 100msec
         while 5 > pins.sample_repl_req_low_state(100):
@@ -71,4 +74,4 @@ def do_user_main():
         else:
             stop_user_processes()
 
-    print('repl mode...')
+    T.trace(__name__, T.DEBUG, 'repl mode...')

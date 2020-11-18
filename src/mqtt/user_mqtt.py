@@ -16,6 +16,7 @@ from src.mqtt.user_subs import UserSubs
 from src.mqtt.user_subs import set_mqtt_subscribe_cb
 from src.mqtt.user_pubs import UserPubs
 from src.mqtt.user_pubs import set_mqtt_publish_cb
+import src.trace as T
 
 ################################################################################
 # Variables
@@ -36,7 +37,6 @@ client = None
 def start_mqtt_client(id, ip, port, user, pwd):
     global client
 
-    print(id, ip, port, user, pwd)
     client = UserMqtt(id, ip, port, user, pwd)
     try:
         client.set_callback(subs_callback)
@@ -44,9 +44,9 @@ def start_mqtt_client(id, ip, port, user, pwd):
         set_mqtt_subscribe_cb(subscribe)
         set_mqtt_publish_cb(publish)
     except AttributeError:
-        print('mqtt client allocation failed...')
+        T.trace(__name__, T.ERROR, 'mqtt client allocation failed...')
     except MQTTException:
-        print('mqtt connection error...')
+        T.trace(__name__, T.ERROR, 'mqtt connection error...')
 
 ################################################################################
 # @brief    Stops the mqtt client and disconnects from the mqtt broker
@@ -58,9 +58,9 @@ def stop_mqtt_client():
         client.disconnect()
         client = None
     except AttributeError:
-        print('mqtt client allocation failed...')
+        T.trace(__name__, T.ERROR, 'mqtt client allocation failed...')
     except MQTTException:
-        print('mqtt connection error...')
+        T.trace(__name__, T.ERROR, 'mqtt connection error...')
 
 ################################################################################
 # @brief    using the mqtt client singleton, this function publishes a messsage
@@ -76,9 +76,9 @@ def publish(topic, payload):
     try:
         client.publish(byte_topic, byte_payload)
     except AttributeError:
-        print('mqtt client not allocated...')
+        T.trace(__name__, T.ERROR, 'mqtt client not allocated...')
     except OSError:
-        print('mqtt connection error in publish...')
+        T.trace(__name__, T.ERROR, 'mqtt connection error in publish...')
 
 ################################################################################
 # @brief    Callback function for incoming subscriptions
@@ -87,8 +87,8 @@ def publish(topic, payload):
 # @return   none
 ################################################################################
 def subs_callback(topic, data):
-    print('Topic received:', topic)
-    print('Data received:', data)
+    T.trace(__name__, T.DEBUG, 'Topic received:' + topic)
+    T.trace(__name__, T.DEBUG, 'Data received:', data)
     topic_string = topic.decode('utf-8')
     data_string = data.decode('utf-8')
     client.check_subscriptions(topic_string, data_string)
@@ -106,9 +106,9 @@ def subscribe(user_subs):
     try:
         client.subscribe(user_subs)
     except AttributeError:
-        print('mqtt client not allocated...')
+        T.trace(__name__, T.ERROR, 'mqtt client not allocated...')
     except OSError:
-        print('mqtt connection error in subscribe...')
+        T.trace(__name__, T.ERROR, 'mqtt connection error in subscribe...')
 
 ################################################################################
 # @brief    This function prints all registered subsciptions
@@ -130,10 +130,10 @@ def check_non_blocking_for_msg():
         client.check_non_blocking_for_msg()
         return True
     except AttributeError:
-        print('mqtt client not allocated...')
+        T.trace(__name__, T.ERROR, 'mqtt client not allocated...')
         return False
     except OSError:
-        print('mqtt connection error in check_non_blocking_for_msg...')
+        T.trace(__name__, T.ERROR, 'mqtt connection error in check_non_blocking_for_msg...')
         return False
 
 ################################################################################
@@ -239,7 +239,7 @@ class UserMqtt:
     ############################################################################
     def print_all_subscriptions(self):
         for obj in self.subscriptions:
-            print(obj.topic)
+            T.trace(__name__, T.DEBUG, obj.topic)
 
     ############################################################################
     # @brief    Checks non blocking if any incoming subscriptions need to be
@@ -251,5 +251,8 @@ class UserMqtt:
 
 ################################################################################
 # Scripts
+
+T.configure(__name__, T.INFO)
+
 if __name__ == "__main__":
     print("--- user_mqtt test script ---")

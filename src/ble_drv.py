@@ -15,6 +15,7 @@ import struct
 import time
 import micropython
 from micropython import const
+import src.trace as T
 
 ################################################################################
 # Variables
@@ -56,12 +57,12 @@ def ble_append_listener(filter):
 
     #check if we need to start the driver first
     if(None == _central):
-        print('start the bluetooth driver')
+        T.trace(__name__, T.INFO, 'start the bluetooth driver...')
         ble = bluetooth.BLE()
         _central = BleDriver(ble)
         _central.scan_for_devices()
 
-    print('append filter: ' + str(filter))
+    T.trace(__name__, T.INFO, 'append filter: ' + str(filter))
     _central.append_listener(filter)
 
 ################################################################################
@@ -73,10 +74,10 @@ def ble_remove_listener(filter):
     global _central
 
     if(None != _central):
-        print('remove filter: ' + str(filter))
+        T.trace(__name__, T.INFO, 'remove filter: ' + str(filter))
         _central.remove_listener(filter)
         if(0 == _central.get_number_of_filters()):
-            print('stop the bluetooth driver')
+            T.trace(__name__, T.INFO, 'stop the bluetooth driver')
             _central.stop_scan()
             _central = None
 
@@ -91,14 +92,14 @@ def ble_remove_listener(filter):
 # @return   none
 ################################################################################
 def _test_callback(addr_type, addr, adv_type, rssi, adv_data):
-    print('--- MIJA found:-------------------------------')
-    print('addr_type: ' + str(addr_type))
-    print('addr :')
-    print(' '.join('{:02x}'.format(x) for x in addr))
-    print('adv_type: ' + str(adv_type))
-    print('rssi: ' + str(rssi))
-    print('adv_data: ')
-    print(' '.join('{:02x}'.format(x) for x in adv_data))
+    T.trace(__name__, T.DEBUG, '--- MIJA found:-------------------------------')
+    T.trace(__name__, T.DEBUG, 'addr_type: ' + str(addr_type))
+    T.trace(__name__, T.DEBUG, 'addr :')
+    T.trace(__name__, T.DEBUG, ' '.join('{:02x}'.format(x) for x in addr))
+    T.trace(__name__, T.DEBUG, 'adv_type: ' + str(adv_type))
+    T.trace(__name__, T.DEBUG, 'rssi: ' + str(rssi))
+    T.trace(__name__, T.DEBUG, 'adv_data: ')
+    T.trace(__name__, T.DEBUG, ' '.join('{:02x}'.format(x) for x in adv_data))
 
 ################################################################################
 # Classes
@@ -162,7 +163,7 @@ class BleDriver:
                 and (obj.addr_filter == filter.addr_filter)
                 and (obj.msg_callback == filter.msg_callback)):
                 self._filter.remove(obj)
-                print('removed: ' + str(filter))
+                T.trace(__name__, T.DEBUG, 'removed listener: ' + str(filter))
 
     ############################################################################
     # @brief    This function is the callback for a received scan result
@@ -177,7 +178,7 @@ class BleDriver:
                 if obj.compare(addr):
                     obj.msg_callback(addr_type, addr, adv_type, rssi, adv_data)
         elif event == _IRQ_SCAN_DONE:
-            print("_IRQ_SCAN_DONE")
+            T.trace(__name__, T.DEBUG, "_IRQ_SCAN_DONE")
 
     ############################################################################
     # @brief    This function starts the scan process
@@ -225,8 +226,12 @@ class BleListener:
 
 ################################################################################
 # Scripts
+
+T.configure(__name__, T.INFO)
+
 if __name__ == "__main__":
-    print('--- ble_driver script -------')
+    T.configure(__name__, T.DEBUG)
+    T.trace(__name__, T.DEBUG, '--- ble_driver script -------')
     filter = BleListener("Badezimmer oben", _test_callback, bytearray([0x58, 0x2d, 0x34, 0x38, 0x64, 0x37]))
     ble_append_listener(filter)
     filter2 = BleListener("Badezimmer unten", _test_callback, bytearray([0x58, 0x2D, 0x34, 0x37, 0x10, 0x86]))

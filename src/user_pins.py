@@ -25,8 +25,6 @@ class UserPins:
         # @return   none
         ############################################################################
         def __init__(self):
-            print('start user pins config...')
-
             self.repl_req_pin = Pin(0, Pin.IN) # defines the button to repl request
             self.led = Pin(2, Pin.OUT) # defines output pin 5 for on board LED
 

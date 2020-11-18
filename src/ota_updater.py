@@ -13,9 +13,24 @@ import os
 import gc
 import machine
 from time import sleep
+import src.trace as T
 
 ################################################################################
 # Functions
+
+################################################################################
+# @brief    downloads, installs and updates to a new version available in github
+#           Precondition needed: a wifi connection to the internet
+#           When the update have been performed, the controller will be
+#           restarted
+# @param    github_repo     url to the github repository
+# @return   none
+################################################################################
+def download_and_install_update_if_available(github_repo):
+    o = OTAUpdater(github_repo)
+    if True == o.check_for_update():
+        o.download_latest_released_version()
+        o.install_update()
 
 ################################################################################
 # Classes
@@ -47,11 +62,11 @@ class OTAUpdater:
         current_version = self.get_local_version(self.modulepath(self.main_dir))
         latest_version = self.get_latest_released_version()
 
-        print('checking versions... ')
-        print('\tcurrent local version: ', current_version)
-        print('\tlatest released version: ', latest_version)
+        T.trace(__name__, T.INFO, 'checking versions... ')
+        T.trace(__name__, T.INFO, '\tcurrent local version: ' + current_version)
+        T.trace(__name__, T.INFO, '\tlatest released version: ' + latest_version)
         if latest_version > current_version:
-            print('new version available...')
+            T.trace(__name__, T.INFO, 'new version available...')
             return True
         else:
             return False
@@ -79,7 +94,6 @@ class OTAUpdater:
     ############################################################################
     def get_latest_released_version(self):
         latest_release = self.http_client.get(self.github_repo + '/releases/latest')
-        #print('Text from json: ', latest_release.json()['tag_name'])
         version = latest_release.json()['tag_name']
         latest_release.close()
         return version
@@ -90,7 +104,7 @@ class OTAUpdater:
     # @return   none
     ############################################################################
     def download_latest_released_version(self):
-        print('Updating...')
+        T.trace(__name__, T.INFO, 'Updating...')
         latest_version = self.get_latest_released_version()
         self.rmtree('next')
         os.mkdir(self.modulepath('next'))
@@ -106,8 +120,7 @@ class OTAUpdater:
     def install_update(self):
         self.rmtree(self.modulepath(self.main_dir))
         os.rename(self.modulepath('next'), self.modulepath(self.main_dir))
-        #print('Update installed (', self.get_local_version(), ')')
-        print('rebooting...')
+        T.trace(__name__, T.INFO, 'rebooting...')
         sleep(1)
         machine.reset()
 
@@ -157,7 +170,7 @@ class OTAUpdater:
     # @return   none
     ############################################################################
     def download_file(self, url, path):
-        print('\tDownloading: ', path)
+        T.trace(__name__, T.INFO, '\tDownloading: ', path)
         with open(path, 'w') as outfile:
             try:
                 response = self.http_client.get(url)
@@ -175,7 +188,9 @@ class OTAUpdater:
     def modulepath(self, path):
         return self.module + '/' + path if self.module else path
 
-
+################################################################################
+# @brief    This is the Response class
+################################################################################
 class Response:
 
     def __init__(self, f):
@@ -207,7 +222,9 @@ class Response:
         import ujson
         return ujson.loads(self.content)
 
-
+################################################################################
+# @brief    This is the HTTP client class
+################################################################################
 class HttpClient:
 
     def request(self, method, url, data=None, json=None, headers={}, stream=None):
@@ -262,7 +279,6 @@ class HttpClient:
                 s.write(data)
 
             l = s.readline()
-            # print(l)
             l = l.split(None, 2)
             status = int(l[1])
             reason = ''
@@ -272,7 +288,6 @@ class HttpClient:
                 l = s.readline()
                 if not l or l == b'\r\n':
                     break
-                # print(l)
                 if l.startswith(b'Transfer-Encoding:'):
                     if b'chunked' in l:
                         raise ValueError('Unsupported ' + l)
@@ -304,3 +319,8 @@ class HttpClient:
 
     def delete(self, url, **kw):
         return self.request('DELETE', url, **kw)
+
+################################################################################
+# Scripts
+
+T.configure(__name__, T.INFO)

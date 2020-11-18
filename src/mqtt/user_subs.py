@@ -12,6 +12,7 @@
 ################################################################################
 # Imports
 from src.skills.abs_skill import AbstractSkill
+import src.trace as T
 
 ################################################################################
 # Variables
@@ -69,7 +70,6 @@ class UserSubs:
             self.topic = channel + "/" + device + "/r/" +skill_entity +"/"+ topic
         self.last_payload = b''
         self.abs_skill = abs_skill
-        print(self.topic)
 
     ############################################################################
     # @brief    this function subscribes the topic specified in the object
@@ -78,7 +78,7 @@ class UserSubs:
     ############################################################################
     def subscribe(self):
         subscribe_cb(self)
-        print("subscribed to: " + self.topic)
+        T.trace(__name__, T.INFO, "subscribed to: " + self.topic)
 
     ############################################################################
     # @brief    callback function interface for arrived subscribed topic
@@ -94,6 +94,8 @@ class UserSubs:
 
 ################################################################################
 # Scripts
+T.configure(__name__, T.INFO)
+
 if __name__ == "__main__":
     # execute only if run as a script
     print("--- test script for user_subs ---")

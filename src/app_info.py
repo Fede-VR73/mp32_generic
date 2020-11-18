@@ -11,6 +11,7 @@
 ################################################################################
 # Imports
 import os
+import src.trace as T
 
 ################################################################################
 # Variables
@@ -28,6 +29,8 @@ class AppInfo:
     # @return   none
     ############################################################################
     def __init__(self):
+
+        T.configure(__name__, T.INFO)
         self.partnumber = 'N39005'
         self.qualifier = 'TC'
         self.version ='0.0.0'
@@ -56,7 +59,7 @@ class AppInfo:
     ############################################################################
     def print_partnumber(self):
         complete_pn = self.partnumber + self.qualifier + self.version
-        print('Firmware Partnumber: ', complete_pn)
+        T.trace(__name__, T.INFO, 'Firmware Partnumber: ' + complete_pn)
 
     ############################################################################
     # @brief    Getter function for the firmware identifier
@@ -78,7 +81,7 @@ class AppInfo:
     # @return   none
     ############################################################################
     def print_descrption(self):
-        print('Firmware Description: ', self.description)
+        T.trace(__name__, T.DEBUG, 'Firmware Description: ' + self.description)
 
     ############################################################################
     # @brief    Getter function for the firmware description

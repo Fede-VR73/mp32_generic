@@ -55,6 +55,7 @@ from src.ble_drv import ble_append_listener
 from src.ble_drv import ble_remove_listener
 from micropython import const
 import src.ble_drv
+import src.trace as T
 ################################################################################
 # Variables
 
@@ -115,7 +116,7 @@ class MijaSkill(AbstractSkill):
     _mija_msg_location = None
 
     _uuid = 0;
-    _mac_addr = bytearray(6);
+    _mac_addr = None
     _msg_cnt = 0;
     _data_type = 0;
     _battery = 0.0;
@@ -141,6 +142,8 @@ class MijaSkill(AbstractSkill):
         self._skill_name = "mija skill"
         self._location = location
         self._address = address
+
+        self._mac_addr = bytearray([0x00, 0x00, 0x00, 0x00, 0x00, 0x00])
 
         #generate all necessary subscription objects
         self.device_info_request = UserSubs(self, "mija/data", dev_id, "std", skill_entity)
@@ -269,7 +272,7 @@ class MijaSkill(AbstractSkill):
             self._humidity = self._humidity / 10.0
 
         else:
-            print('unknown data type')
+            T.trace(__name__, T.ERROR, 'unknown data type')
 
         self._print_data()
 
@@ -278,17 +281,19 @@ class MijaSkill(AbstractSkill):
     # @return   none
     ############################################################################
     def _print_data(self):
-        print('--- Actual Data Set: ----------')
-        print('UUID: ' + str(self._uuid))
-        print('MAC address: ' + ' '.join('{:02x}'.format(x) for x in self._mac_addr))
-        print('MSG counter: ' + str(self._msg_cnt))
-        print('Data type: ' + str(self._data_type))
-        print('Battery fill: ' + str(self._battery) + ' %')
-        print('Temperature: ' + str(self._temperature) + ' Grad C')
-        print('Humidity: ' + str(self._humidity) + ' %')
+        T.trace(__name__, T.DEBUG, '--- Actual Data Set: ----------')
+        T.trace(__name__, T.DEBUG, 'UUID: ' + str(self._uuid))
+        T.trace(__name__, T.DEBUG, 'MAC address: ' + ' '.join('{:02x}'.format(x) for x in self._mac_addr))
+        T.trace(__name__, T.DEBUG, 'MSG counter: ' + str(self._msg_cnt))
+        T.trace(__name__, T.DEBUG, 'Data type: ' + str(self._data_type))
+        T.trace(__name__, T.DEBUG, 'Battery fill: ' + str(self._battery) + ' %')
+        T.trace(__name__, T.DEBUG, 'Temperature: ' + str(self._temperature) + ' Grad C')
+        T.trace(__name__, T.DEBUG, 'Humidity: ' + str(self._humidity) + ' %')
 
 ################################################################################
 # Scripts
+T.configure(__name__, T.INFO)
+
 if __name__ == "__main__":
     # execute only if run as a script
     print('--- mija skill script ---')

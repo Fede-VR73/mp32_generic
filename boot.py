@@ -9,7 +9,11 @@
 ################################################################################
 # Imports
 from src.user_boot import do_user_boot
+import src.trace as T
 
+################################################################################
+# Variables
+_NAME_ = 'BOOT'
 ################################################################################
 # Functions
 
@@ -21,5 +25,6 @@ from src.user_boot import do_user_boot
 
 ################################################################################
 # Scripting
-print('starting user boot...')
+T.trace(__name__, T.INFO, 'starting user boot sequence...')
+#print('starting user boot...')
 do_user_boot()

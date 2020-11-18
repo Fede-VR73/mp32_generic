@@ -10,13 +10,14 @@
 
 ################################################################################
 # Imports
-from src.ota_proc import download_and_install_update_if_available
+from src.ota_updater import download_and_install_update_if_available
 from src.param_set import ParamSet
 from src.user_pins import UserPins
 from src.mqtt.user_mqtt import start_mqtt_client
 from src.app_info import AppInfo
 import esp
 import network
+import src.trace as T
 
 ################################################################################
 # Variables
@@ -36,14 +37,14 @@ def connect_to_wifi_network(ssid, password):
 
     sta_if = network.WLAN(network.STA_IF)
     if not sta_if.isconnected():
-        print('connecting to network...')
+        T.trace(__name__, T.DEBUG, 'connecting to network...')
         sta_if.active(True)
-        print(ssid)
-        print(password)
+        T.trace(__name__, T.DEBUG, ssid)
+        T.trace(__name__, T.DEBUG, password)
         sta_if.connect(ssid, password)
         while not sta_if.isconnected():
             pass
-    print('network config:', sta_if.ifconfig())
+    T.trace(__name__, T.DEBUG, 'network config:' + str(sta_if.ifconfig()))
 
 ################################################################################
 # @brief    user boot function
@@ -52,7 +53,8 @@ def connect_to_wifi_network(ssid, password):
 def do_user_boot():
     global repl_mode
 
-    print('user boot...')
+    T.configure(__name__, T.INFO)
+    T.trace(__name__, T.DEBUG, 'user boot...')
     esp.osdebug(None)
 
     pins = UserPins()
@@ -60,26 +62,27 @@ def do_user_boot():
     pinStateHigh = pins.sample_repl_req_low_state()
     if 50 < pinStateHigh:
         repl_mode = True
-        print('repl request detected...')
+        T.trace(__name__, T.DEBUG, 'repl request detected...')
     else:
         repl_mode = False
-        print('standard user detected...')
+        T.trace(__name__, T.DEBUG, 'standard user detected...')
     pins.led_off()
 
-    print('initialize parameter sets...')
+    T.trace(__name__, T.DEBUG, 'initialize parameter sets...')
     para = ParamSet()
 
-    print('print firmware identification...')
+    T.trace(__name__, T.DEBUG, 'print firmware identification...')
     app = AppInfo()
     app.print_partnumber()
-    app.print_descrption
+    app.print_descrption()
 
-    print('connect to user network...')
-    connect_to_wifi_network(para.get_wifi_ssid(), para.get_wifi_password())
+    if True != repl_mode:
+        T.trace(__name__, T.DEBUG, 'connect to user network...')
+        connect_to_wifi_network(para.get_wifi_ssid(), para.get_wifi_password())
 
-    print('check for a new firmware version on github...')
-    download_and_install_update_if_available(para.get_gitHub_repo())
+        T.trace(__name__, T.DEBUG, 'check for a new firmware version on github...')
+        download_and_install_update_if_available(para.get_gitHub_repo())
 
-    print('start the webrepl...')
-    import webrepl
-    webrepl.start()
+        T.trace(__name__, T.DEBUG, 'start the webrepl...')
+        import webrepl
+        webrepl.start()

@@ -12,6 +12,7 @@
 # Imports
 import os
 
+import src.trace as T
 
 ################################################################################
 # Classes
@@ -43,9 +44,7 @@ class ParamSet:
     # @param    main_dir    main directory, root directory
     # @return   none
     ############################################################################
-    def __init__(self, set_name='.sets', param_dir='param'):
-        print('parameter file: ', set_name)
-        print('parameter file folder: ', param_dir)
+    def __init__(self, set_name='.sets', param_dir='para'):
         self.set_name = set_name
         self.param_dir = param_dir
 
@@ -57,7 +56,8 @@ class ParamSet:
     ############################################################################
     def __read_parameter_from_file(self):
         try:
-            f = open('para/.sets')
+            #f = open('para/.sets')
+            f = open(self.param_dir + '/' + self.set_name)
             self.wifi_ssid = f.readline().replace('\n', '')
             self.wifi_pwd = f.readline().replace('\n', '')
             self.github_repo = f.readline().replace('\n', '')
@@ -69,7 +69,7 @@ class ParamSet:
             self.device_id = f.readline().replace('\n', '')
             self.capability = int(f.readline().replace('\n', ''))
         except OSError:
-            print("parameter read error...")
+            T.trace(__name__, T.ERROR, 'parameter read error: ' + self.param_dir + '/' + self.set_name)
 
     ############################################################################
     # @brief    get WIFI ssid parameter
