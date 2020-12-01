@@ -170,7 +170,7 @@ class OTAUpdater:
     # @return   none
     ############################################################################
     def download_file(self, url, path):
-        T.trace(__name__, T.INFO, '\tDownloading: ', path)
+        T.trace(__name__, T.INFO, '\tDownloading: ' + path)
         with open(path, 'w') as outfile:
             try:
                 response = self.http_client.get(url)

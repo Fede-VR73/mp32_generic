@@ -53,7 +53,7 @@ def connect_to_wifi_network(ssid, password):
 def do_user_boot():
     global repl_mode
 
-    T.configure(__name__, T.INFO)
+    T.configure(__name__, T.DEBUG)
     T.trace(__name__, T.DEBUG, 'user boot...')
     esp.osdebug(None)
 

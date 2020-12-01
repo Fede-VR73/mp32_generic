@@ -92,6 +92,14 @@ class UserSubs:
         self.last_payload = payload
         self.abs_skill.execute_subscription(topic, payload)
 
+    ############################################################################
+    # @brief    compares a given topic with the initialized topic
+    # @param    topic       topic of message
+    # @return   True if equal, else false
+    ############################################################################
+    def compare_topic(self, topic):
+        return self.topic == topic
+
 ################################################################################
 # Scripts
 T.configure(__name__, T.INFO)
