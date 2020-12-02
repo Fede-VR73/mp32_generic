@@ -14,6 +14,7 @@ from umqtt.simple import MQTTException
 from time import sleep
 from src.mqtt.user_subs import UserSubs
 from src.mqtt.user_subs import set_mqtt_subscribe_cb
+from src.mqtt.user_subs import set_mqtt_unsubscribe_cb
 from src.mqtt.user_pubs import UserPubs
 from src.mqtt.user_pubs import set_mqtt_publish_cb
 import src.trace as T
@@ -42,6 +43,7 @@ def start_mqtt_client(id, ip, port, user, pwd):
         client.set_callback(subs_callback)
         client.connect()
         set_mqtt_subscribe_cb(subscribe)
+        set_mqtt_unsubscribe_cb(unsubscribe)
         set_mqtt_publish_cb(publish)
     except AttributeError:
         T.trace(__name__, T.ERROR, 'mqtt client allocation failed...')
@@ -87,17 +89,16 @@ def publish(topic, payload):
 # @return   none
 ################################################################################
 def subs_callback(topic, data):
-    T.trace(__name__, T.DEBUG, 'Topic received:' + topic)
-    T.trace(__name__, T.DEBUG, 'Data received:', data)
     topic_string = topic.decode('utf-8')
     data_string = data.decode('utf-8')
+    T.trace(__name__, T.DEBUG, 'Topic received:' + topic_string)
+    T.trace(__name__, T.DEBUG, 'Data received:' + data_string)
     client.check_subscriptions(topic_string, data_string)
 
 ################################################################################
 # @brief    This function subscribes for a topic and registers a callback
 #           function to be called when the topic arrives
-# @param    topic   topic identifier of the messsage
-# @param    cb_func callback function when topic arrives
+# @param    user_subs   user subscription
 # @return   none
 ################################################################################
 def subscribe(user_subs):
@@ -109,6 +110,21 @@ def subscribe(user_subs):
         T.trace(__name__, T.ERROR, 'mqtt client not allocated...')
     except OSError:
         T.trace(__name__, T.ERROR, 'mqtt connection error in subscribe...')
+
+################################################################################
+# @brief    This function unsubscribes for a topic
+# @param    user_subs   user subscription
+# @return   none
+################################################################################
+def unsubscribe(user_subs):
+    global client
+
+    try:
+        client.unsubscribe(user_subs)
+    except AttributeError:
+        T.trace(__name__, T.ERROR, 'mqtt client not allocated...')
+    except OSError:
+        T.trace(__name__, T.ERROR, 'mqtt connection error in unsubscribe...')
 
 ################################################################################
 # @brief    This function prints all registered subsciptions
@@ -220,6 +236,17 @@ class UserMqtt:
     def subscribe(self, user_subs):
         self.subscriptions.append(user_subs)
         self.mqtt_client.subscribe(user_subs.topic)
+
+    ############################################################################
+    # @brief    This function unsubscribes for a topic message
+    # @param    user_subs   user subscription object including the topic and
+    #                       callback
+    # @return   none
+    ############################################################################
+    def unsubscribe(self, user_subs):
+        for obj in self.subscriptions:
+            if topic == obj.topic:
+                self.subscriptions.remove(obj)
 
     ############################################################################
     # @brief    This function subscribes for a topic message and registers a

@@ -231,7 +231,7 @@ class Temt6000Skill(AbstractSkill):
 
 ################################################################################
 # Scripts
-T.configure(__name__, T.DEBUG)
+T.configure(__name__, T.INFO)
 
 if __name__ == "__main__":
     # execute only if run as a script

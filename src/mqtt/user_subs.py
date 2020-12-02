@@ -22,6 +22,7 @@ import src.trace as T
 # Variables
 # mqtt subscription variable
 subscribe_cb = None
+unsubscribe_cb = None
 
 ################################################################################
 # Functions
@@ -34,6 +35,16 @@ def set_mqtt_subscribe_cb(subs_cb):
     global subscribe_cb
 
     subscribe_cb = subs_cb
+
+################################################################################
+# @brief    Set Unsubscribe topic function
+# @param    unsubs_cb    callback function for unsubscribing the messages
+# @return   none
+################################################################################
+def set_mqtt_unsubscribe_cb(unsubs_cb):
+    global unsubscribe_cb
+
+    unsubscribe_cb = unsubs_cb
 
 ################################################################################
 # Classes
@@ -79,6 +90,15 @@ class UserSubs:
     def subscribe(self):
         subscribe_cb(self)
         T.trace(__name__, T.INFO, "subscribed to: " + self.topic)
+
+    ############################################################################
+    # @brief    this function unsubscribes the topic specified in the object
+    #           initialization
+    # @return   none
+    ############################################################################
+    def unsubscribe(self):
+        unsubscribe_cb(self)
+        T.trace(__name__, T.INFO, "unsubscribed to: " + self.topic)
 
     ############################################################################
     # @brief    callback function interface for arrived subscribed topic

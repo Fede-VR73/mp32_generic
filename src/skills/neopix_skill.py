@@ -197,8 +197,21 @@ class NeopixSkill(AbstractSkill):
                 self._neo_cmd = _OFF
 
         elif self._sub_color.compare_topic(topic):
-            self._color = [int(s) for s in data.split() if s.isdigit()]
-            self._neo_cmd = _ON
+
+            # conversion from string to integer list
+            a = [int(s) for s in data.split(',') if s.isdigit()]
+            # validation of data: 1. initial length, 2. range check
+            if len(a) == 3:
+                b = [s for s in a if s <= 255 and s >= 0]
+                # only if all 3 elements of the RGB are in range, the size of
+                # the list stays at 3
+                if len(b) == 3:
+                    self._color = b
+                    self._neo_cmd = _ON
+                else:
+                    T.trace(__name__, T.WARNING, 'data out of range')
+                    T.trace(__name__, T.WARNING, 'topic: ' + topic)
+                    T.trace(__name__, T.WARNING, 'data: ' + data)
 
         else:
             T.trace(__name__, T.ERROR, 'unexpected subscription')

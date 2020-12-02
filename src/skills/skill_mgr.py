@@ -71,6 +71,11 @@ def _start_multi_sense(id):
     active_skills.append(skill)
     T.trace(__name__, T.INFO, skill.get_skill_name() + " started")
 
+    skill = NeopixSkill(id, '0', _NEO_DATA_GPIO)
+    skill.start_skill()
+    active_skills.append(skill)
+    T.trace(__name__, T.INFO, skill.get_skill_name() + ' started')
+
 ################################################################################
 # @brief    Initializes and starts the skill manager
 # @param    id       device id
@@ -84,12 +89,12 @@ def start_skill_manager(id, cap):
     active_skills.append(skill)
     T.trace(__name__, T.INFO, skill.get_skill_name() + ' started')
 
-    #_start_multi_sense()
+    _start_multi_sense(id)
 
-    skill = NeopixSkill(id, '0', _NEO_DATA_GPIO)
-    skill.start_skill()
-    active_skills.append(skill)
-    T.trace(__name__, T.INFO, skill.get_skill_name() + ' started')
+    #skill = NeopixSkill(id, '0', _NEO_DATA_GPIO)
+    #skill.start_skill()
+    #active_skills.append(skill)
+    #T.trace(__name__, T.INFO, skill.get_skill_name() + ' started')
 
 
     T.trace(__name__, T.INFO, 'skill manager started...')
