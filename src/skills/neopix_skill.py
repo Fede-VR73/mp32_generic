@@ -224,7 +224,10 @@ class NeopixSkill(AbstractSkill):
     ############################################################################
     def stop_skill(self):
         super().stop_skill()
-
+        self._sub_toggle.unsubscribe()
+        self._sub_switch.unsubscribe()
+        self._sub_bright.unsubscribe()
+        self._sub_color.unsubscribe()
         self._turn_neo_off()
 
         self._neo_gpio = None

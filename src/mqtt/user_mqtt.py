@@ -245,7 +245,7 @@ class UserMqtt:
     ############################################################################
     def unsubscribe(self, user_subs):
         for obj in self.subscriptions:
-            if topic == obj.topic:
+            if user_subs.topic == obj.topic:
                 self.subscriptions.remove(obj)
 
     ############################################################################
