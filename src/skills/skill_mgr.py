@@ -14,6 +14,7 @@ from src.skills.gen_skill import GenSkill
 from src.skills.mija_skill import MijaSkill
 from src.skills.dht_skill import DhtSkill
 from src.skills.pir_skill import PirSkill
+from src.skills.pir_skill import PIR_SKILL_MODE_POLL
 from src.skills.temt6000_skill import Temt6000Skill
 from src.skills.neopix_skill import NeopixSkill
 import src.trace as T
@@ -26,10 +27,13 @@ _GPIO_27        = 27
 _GPIO_33        = 33
 _GPIO_32        = 32
 _GPIO_35        = 35
+_GPIO_17        = 17
+_GPIO_21        = 21
 _NEO_DATA_GPIO  = _GPIO_27
 _DHT22_PWR_GPIO = _GPIO_26
 _DHT22_DAT_GPIO = _GPIO_25
-_PIR_DATA_GPIO  = _GPIO_33
+_PIR_DATA_GPIO  = _GPIO_17
+_PIR_LED_GPIO   = _GPIO_21
 _TEMP_PWR_GPIO  = _GPIO_32
 _TEMP_DAT_ADC   = _GPIO_35
 
@@ -61,7 +65,7 @@ def _start_multi_sense(id):
     active_skills.append(skill)
     T.trace(__name__, T.INFO, skill.get_skill_name() + " started")
 
-    skill = PirSkill(id, "0", _PIR_DATA_GPIO)
+    skill = PirSkill(id, "0", _PIR_DATA_GPIO, PIR_SKILL_MODE_POLL, _PIR_LED_GPIO)
     skill.start_skill()
     active_skills.append(skill)
     T.trace(__name__, T.INFO, skill.get_skill_name() + " started")
@@ -95,6 +99,11 @@ def start_skill_manager(id, cap):
     #skill.start_skill()
     #active_skills.append(skill)
     #T.trace(__name__, T.INFO, skill.get_skill_name() + ' started')
+
+    #skill = PirSkill(id, "0", _PIR_DATA_GPIO, PIR_SKILL_MODE_POLL, _PIR_LED_GPIO)
+    #skill.start_skill()
+    #active_skills.append(skill)
+    #T.trace(__name__, T.INFO, skill.get_skill_name() + " started")
 
 
     T.trace(__name__, T.INFO, 'skill manager started...')

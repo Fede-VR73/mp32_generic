@@ -29,8 +29,8 @@ _NO_VALUE = 0xff
 _PAYLOAD_ON = 'ON'
 _PAYLOAD_OFF = 'OFF'
 
-_PIR_SKILL_MODE_POLL = 0
-_PIR_SKILL_MODE_ISR = 1
+PIR_SKILL_MODE_POLL = 0
+PIR_SKILL_MODE_ISR = 1
 
 _PIR_STATE_LOW = 0
 _PIR_STATE_HIGH = 1
@@ -75,7 +75,7 @@ class PirSkill(AbstractSkill):
     _led_gpio = None
 
     _led_inf = False
-    _pir_mode = _PIR_SKILL_MODE_POLL
+    _pir_mode = PIR_SKILL_MODE_POLL
 
     ############################################################################
     # Member Functions
@@ -89,7 +89,7 @@ class PirSkill(AbstractSkill):
     # @param    led_inv        led inverse state displaying
     # @return   none
     ############################################################################
-    def __init__(self, dev_id, skill_entity, pir_pin, pir_mode=_PIR_SKILL_MODE_POLL,
+    def __init__(self, dev_id, skill_entity, pir_pin, pir_mode=PIR_SKILL_MODE_POLL,
                     led_pin=_NO_VALUE, led_inv=False):
         super().__init__(dev_id, skill_entity)
         self._skill_name = "PIR skill"
@@ -99,7 +99,7 @@ class PirSkill(AbstractSkill):
         self._led_pin = led_pin
         self._led_inf = led_inv
 
-        self._pir_mode
+        self._pir_mode = pir_mode
 
         self._pir_gpio = None
         self._led_gpio = None
@@ -115,7 +115,8 @@ class PirSkill(AbstractSkill):
             self._pir_gpio = machine.Pin(self._pir_pin, machine.Pin.IN,
                                             machine.Pin.PULL_UP)
         if self._led_pin != _NO_VALUE:
-            self._led_pin = machine.Pin(self._led_pin, machine.Pin.OUT)
+            self._led_gpio = machine.Pin(self._led_pin, machine.Pin.OUT)
+            T.trace(__name__, T.DEBUG, 'led pin configured: ' + str(self._led_pin))
 
     ############################################################################
     # @brief    checks the pir state transition
@@ -136,9 +137,11 @@ class PirSkill(AbstractSkill):
         if self._led_gpio != None:
             if self._publish_state == True:
                 if self._led_inf == False:
-                        self._led_gpio.value(self._current_state)
+                    self._led_gpio.value(self._current_state)
+                    T.trace(__name__, T.DEBUG, 'led state:' + str(self._current_state))
                 else:
                     self._led_gpio.value(_PIR_STATE_DICT_INV[self._current_state])
+                    T.trace(__name__, T.DEBUG, 'led state:' + str(_PIR_STATE_DICT_INV[self._current_state]))
 
     ############################################################################
     # @brief    executes the skill cyclic task
@@ -169,11 +172,18 @@ class PirSkill(AbstractSkill):
         super().stop_skill()
 
         self._pir_gpio = None
-        self._led_gpio = None
+        self._current_state = _PIR_STATE_LOW
+        if self._led_gpio != None:
+            if self._led_inf == False:
+                self._led_gpio.value(self._current_state)
+                T.trace(__name__, T.DEBUG, 'led state:' + str(self._current_state))
+            else:
+                self._led_gpio.value(_PIR_STATE_DICT_INV[self._current_state])
+                T.trace(__name__, T.DEBUG, 'led state:' + str(_PIR_STATE_DICT_INV[self._current_state]))
 
 ################################################################################
 # Scripts
-T.configure(__name__, T.INFO)
+T.configure(__name__, T.DEBUG)
 
 if __name__ == "__main__":
     # execute only if run as a script
