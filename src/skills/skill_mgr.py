@@ -17,6 +17,7 @@ from src.skills.pir_skill import PirSkill
 from src.skills.pir_skill import PIR_SKILL_MODE_POLL
 from src.skills.temt6000_skill import Temt6000Skill
 from src.skills.neopix_skill import NeopixSkill
+from src.skills.relay_skill import RelaySkill
 import src.trace as T
 ################################################################################
 # Variables
@@ -29,6 +30,10 @@ _GPIO_32        = 32
 _GPIO_35        = 35
 _GPIO_17        = 17
 _GPIO_21        = 21
+_GPIO_18        = 18
+_GPIO_19        = 19
+_RELAY_OUT_GPIO = _GPIO_18
+_RELAY_LED_GPIO = _GPIO_19
 _NEO_DATA_GPIO  = _GPIO_27
 _DHT22_PWR_GPIO = _GPIO_26
 _DHT22_DAT_GPIO = _GPIO_25
@@ -80,6 +85,11 @@ def _start_multi_sense(id):
     active_skills.append(skill)
     T.trace(__name__, T.INFO, skill.get_skill_name() + ' started')
 
+    skill = RelaySkill(id, "0", _RELAY_OUT_GPIO, _RELAY_LED_GPIO, 0)
+    skill.start_skill()
+    active_skills.append(skill)
+    T.trace(__name__, T.INFO, skill.get_skill_name() + " started")
+
 ################################################################################
 # @brief    Initializes and starts the skill manager
 # @param    id       device id
@@ -100,7 +110,7 @@ def start_skill_manager(id, cap):
     #active_skills.append(skill)
     #T.trace(__name__, T.INFO, skill.get_skill_name() + ' started')
 
-    #skill = PirSkill(id, "0", _PIR_DATA_GPIO, PIR_SKILL_MODE_POLL, _PIR_LED_GPIO)
+    #skill = RelaySkill(id, "0", _RELAY_OUT_GPIO, _RELAY_LED_GPIO, 0)
     #skill.start_skill()
     #active_skills.append(skill)
     #T.trace(__name__, T.INFO, skill.get_skill_name() + " started")

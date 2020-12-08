@@ -170,7 +170,6 @@ class PirSkill(AbstractSkill):
     ############################################################################
     def stop_skill(self):
         super().stop_skill()
-
         self._pir_gpio = None
         self._current_state = _PIR_STATE_LOW
         if self._led_gpio != None:
