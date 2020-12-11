@@ -35,7 +35,7 @@ class DhtSkill(AbstractSkill):
     _pub_temperature = None
     _pub_humitdity = None
     EXECUTION_PERIOD = 3000
-    _SLEEP_PERIOD = 5
+    _SLEEP_PERIOD = 1
     _sleep_counter = 0
     NO_VALUE = 0xFF
 
@@ -215,7 +215,7 @@ class DhtSkill(AbstractSkill):
 
 ################################################################################
 # Scripts
-T.configure(__name__, T.INFO)
+T.configure(__name__, T.DEBUG)
 
 if __name__ == "__main__":
     # execute only if run as a script
