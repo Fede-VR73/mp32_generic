@@ -69,9 +69,11 @@ class PirSkill(AbstractSkill):
     EXECUTION_PERIOD = 500
 
     _pir_pin = _NO_VALUE
+    _pwr_pin = _NO_VALUE
     _led_pin = _NO_VALUE
 
     _pir_gpio = None
+    _pwr_gpio = None
     _led_gpio = None
 
     _led_inf = False
@@ -85,12 +87,15 @@ class PirSkill(AbstractSkill):
     # @param    dev_id         device identification
     # @param    skill_entity   skill entity if multiple skills are generated
     # @param    _pir_pin       pir input pin
+    # @param    _pwr_pin       pir power output pin
+    # @param    pir_mode       pir detection mode, currently only poll supported
     # @param    led_pin        led pin displaying the pir state
     # @param    led_inv        led inverse state displaying
     # @return   none
     ############################################################################
-    def __init__(self, dev_id, skill_entity, pir_pin, pir_mode=PIR_SKILL_MODE_POLL,
-                    led_pin=_NO_VALUE, led_inv=False):
+    def __init__(self, dev_id, skill_entity, pir_pin, pwr_pin = _NO_VALUE,
+                    pir_mode=PIR_SKILL_MODE_POLL, led_pin=_NO_VALUE,
+                    led_inv=False):
         super().__init__(dev_id, skill_entity)
         self._skill_name = "PIR skill"
         self._pub_state = UserPubs("pir/status", dev_id, "std", skill_entity)
@@ -98,11 +103,13 @@ class PirSkill(AbstractSkill):
         self._pir_pin = pir_pin
         self._led_pin = led_pin
         self._led_inf = led_inv
+        self._pwr_pin = pwr_pin
 
         self._pir_mode = pir_mode
 
         self._pir_gpio = None
         self._led_gpio = None
+        self._pwr_gpio = None
 
     ############################################################################
     # @brief    starts the skill
@@ -117,6 +124,10 @@ class PirSkill(AbstractSkill):
         if self._led_pin != _NO_VALUE:
             self._led_gpio = machine.Pin(self._led_pin, machine.Pin.OUT)
             T.trace(__name__, T.DEBUG, 'led pin configured: ' + str(self._led_pin))
+
+        if self._pwr_pin != _NO_VALUE:
+            self._pwr_gpio = machine.Pin(self._pwr_pin, machine.Pin.OUT)
+            self._pwr_gpio.on()
 
     ############################################################################
     # @brief    checks the pir state transition
@@ -179,10 +190,14 @@ class PirSkill(AbstractSkill):
             else:
                 self._led_gpio.value(_PIR_STATE_DICT_INV[self._current_state])
                 T.trace(__name__, T.DEBUG, 'led state:' + str(_PIR_STATE_DICT_INV[self._current_state]))
+            self._led_gpio = None
+        if self._pwr_gpio != None:
+            self._pwr_gpio.off()
+            self._pwr_gpio = None
 
 ################################################################################
 # Scripts
-T.configure(__name__, T.DEBUG)
+T.configure(__name__, T.INFO)
 
 if __name__ == "__main__":
     # execute only if run as a script

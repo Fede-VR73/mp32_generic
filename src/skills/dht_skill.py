@@ -34,8 +34,8 @@ class DhtSkill(AbstractSkill):
     # Member Attributes
     _pub_temperature = None
     _pub_humitdity = None
-    EXECUTION_PERIOD = 3000
-    _SLEEP_PERIOD = 1
+    EXECUTION_PERIOD = 4000
+    _SLEEP_PERIOD = 10
     _sleep_counter = 0
     NO_VALUE = 0xFF
 
@@ -82,11 +82,16 @@ class DhtSkill(AbstractSkill):
     ############################################################################
     def start_skill(self):
 
-        if self._dht == None:
-            self._dht = dht.DHT22(machine.Pin(self._data_pin))
         if self._pwr_pin != self.NO_VALUE:
             self._pwr_gpio = machine.Pin(self._pwr_pin, machine.Pin.OUT)
             self._pwr_gpio.off()
+
+        self._activate_chip()
+        if self._dht == None:
+            self._dht = dht.DHT22(machine.Pin(self._data_pin))
+            if self._dht == None:
+                T.trace(__name__, T.EROR, 'initialization of dht object failed')
+        self._deactivate_chip()
 
         self._sleep_counter = self._SLEEP_PERIOD
         self._state = self._STATE_SLEEP
@@ -215,7 +220,7 @@ class DhtSkill(AbstractSkill):
 
 ################################################################################
 # Scripts
-T.configure(__name__, T.DEBUG)
+T.configure(__name__, T.INFO)
 
 if __name__ == "__main__":
     # execute only if run as a script
