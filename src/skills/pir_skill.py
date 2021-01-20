@@ -120,7 +120,7 @@ class PirSkill(AbstractSkill):
 
         if self._pir_pin != _NO_VALUE:
             self._pir_gpio = machine.Pin(self._pir_pin, machine.Pin.IN,
-                                            machine.Pin.PULL_UP)
+                                            machine.Pin.PULL_DOWN) 
         if self._led_pin != _NO_VALUE:
             self._led_gpio = machine.Pin(self._led_pin, machine.Pin.OUT)
             T.trace(__name__, T.DEBUG, 'led pin configured: ' + str(self._led_pin))
