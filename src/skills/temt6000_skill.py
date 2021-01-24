@@ -81,8 +81,8 @@ class Temt6000Skill(AbstractSkill):
     def __init__(self, dev_id, skill_entity, adc_pin, pwr_pin=NO_VALUE):
         super().__init__(dev_id, skill_entity)
         self._skill_name = "TEMT6000 skill"
-        self._pub_brightness = UserPubs("temt6000/raw", dev_id)
-        self._pub_bright_level = UserPubs("temt6000/level", dev_id)
+        self._pub_brightness = UserPubs("temt6x/raw", dev_id, "std", skill_entity)
+        self._pub_bright_level = UserPubs("temt6x/level", dev_id, "std", skill_entity)
         self._adc_pin = adc_pin
         self._pwr_pin = pwr_pin
         self._brightness = 0

@@ -15,6 +15,7 @@ from src.mqtt.user_subs import UserSubs
 from src.mqtt.user_pubs import UserPubs
 from src.app_info import AppInfo
 import src.trace as T
+import network as net
 
 ################################################################################
 # Variables
@@ -31,12 +32,16 @@ class GenSkill(AbstractSkill):
 
     ############################################################################
     # Member Attributes
-    device_info_request = None
+    _device_info_request = None
     pub_fw_ident = None
     pub_fw_version = None
     pub_fw_desc = None
+    pub_device_ip = None
+
     app_info = None
+
     EXECUTION_PERIOD = 5000
+
     health_counter = 0
     pub_health_counter = None
     ############################################################################
@@ -51,11 +56,11 @@ class GenSkill(AbstractSkill):
     def __init__(self, dev_id, skill_entity):
         super().__init__(dev_id, skill_entity)
         self._skill_name = "gen skill"
-        self.device_info_request = UserSubs(self, "any/topic/test", dev_id, "std", skill_entity)
-        self.device_info_request.subscribe()
+        self._device_info_request = UserSubs(self, "gen/info", dev_id)
         self.pub_fw_ident = UserPubs("gen/fwident", dev_id)
         self.pub_fw_version = UserPubs("gen/fwversion", dev_id)
-        self.pub_fw_desc = UserPubs("gen/fwdesc", dev_id)
+        self.pub_fw_desc = UserPubs("gen/desc", dev_id)
+        self.pub_device_ip = UserPubs("gen/ip", dev_id)
         self.app_info = AppInfo()
         self.skill_name = "generic skill"
         self.pub_health_counter = UserPubs("health/tic", dev_id)
@@ -66,9 +71,9 @@ class GenSkill(AbstractSkill):
     # @return   none
     ############################################################################
     def start_skill(self):
-        self.pub_fw_ident.publish(self.app_info.get_fw_identifier())
-        self.pub_fw_version.publish(self.app_info.get_fw_version())
-        self.pub_fw_desc.publish(self.app_info.get_description())
+        self._device_info_request.subscribe()
+
+        self._publish_gen_info()
 
     ############################################################################
     # @brief    executes the skill cyclic task
@@ -88,14 +93,33 @@ class GenSkill(AbstractSkill):
     # @return   none
     ############################################################################
     def execute_subscription(self, topic, data):
-        super().execute_subscription(topic, data)
+        if self._device_info_request.compare_topic(topic):
+            T.trace(__name__, T.DEBUG, 'generic information request received')
+            self._publish_gen_info()
+        else:
+            T.trace(__name__, T.ERROR, 'unexpected subscription')
+            T.trace(__name__, T.DEBUG, 'topic: ' + topic)
+            T.trace(__name__, T.DEBUG, 'data: ' + data)
 
     ############################################################################
     # @brief    stopps the skill
     # @return   none
     ############################################################################
     def stop_skill(self):
+        self._device_info_request.unsubscribe()
         super().stop_skill()
+
+    ############################################################################
+    # @brief    publish generic information on the device
+    # @return   none
+    ############################################################################
+    def _publish_gen_info(self):
+        self.pub_fw_ident.publish(self.app_info.get_fw_identifier())
+        self.pub_fw_version.publish(self.app_info.get_fw_version())
+        self.pub_fw_desc.publish(self.app_info.get_description())
+        sta_if = net.WLAN(net.STA_IF)
+        ip_cfg = sta_if.ifconfig()
+        self.pub_device_ip.publish(ip_cfg[0])
 
 ################################################################################
 # Scripts

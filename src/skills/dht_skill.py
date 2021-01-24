@@ -69,8 +69,8 @@ class DhtSkill(AbstractSkill):
     def __init__(self, dev_id, skill_entity, data_pin, pwr_pin=NO_VALUE):
         super().__init__(dev_id, skill_entity)
         self._skill_name = "DHT skill"
-        self._pub_temperature = UserPubs("temp_hum/temp", dev_id)
-        self._pub_humitdity = UserPubs("temp_hum/hum", dev_id)
+        self._pub_temperature = UserPubs("dht/temp", dev_id, "std", skill_entity)
+        self._pub_humitdity = UserPubs("dht/hum", dev_id, "std", skill_entity)
         self._data_pin = data_pin
         self._dht = None
         self._pwr_pin = pwr_pin
