@@ -59,12 +59,22 @@ active_skills = []
 ################################################################################
 def _start_multi_sense(id):
 
-    skill = MijaSkill(id, "0", "Badezimmer unten", bytearray([0x58, 0x2d, 0x34, 0x38, 0x64, 0x37]))
+    skill = MijaSkill(id, "0", "Badezimmer oben", bytearray([0x58, 0x2d, 0x34, 0x38, 0x64, 0x37]))
     skill.start_skill()
     active_skills.append(skill)
     T.trace(__name__, T.INFO, skill.get_skill_name() + " started")
 
-    skill = MijaSkill(id, "1", "Badezimmer oben", bytearray([0x58, 0x2D, 0x34, 0x37, 0x10, 0x86]))
+    skill = MijaSkill(id, "1", "Badezimmer unten", bytearray([0x58, 0x2D, 0x34, 0x37, 0x10, 0x86]))
+    skill.start_skill()
+    active_skills.append(skill)
+    T.trace(__name__, T.INFO, skill.get_skill_name() + " started")
+
+    skill = MijaSkill(id, "2", "Elternschlafzimmer", bytearray([0x58, 0x2D, 0x34, 0x3b, 0x8c, 0x66]))
+    skill.start_skill()
+    active_skills.append(skill)
+    T.trace(__name__, T.INFO, skill.get_skill_name() + " started")
+
+    skill = MijaSkill(id, "3", "Gaestezimmer", bytearray([0x58, 0x2D, 0x34, 0x39, 0x16, 0xa7]))
     skill.start_skill()
     active_skills.append(skill)
     T.trace(__name__, T.INFO, skill.get_skill_name() + " started")

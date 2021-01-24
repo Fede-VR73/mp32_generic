@@ -234,7 +234,7 @@ class NeopixSkill(AbstractSkill):
 
 ################################################################################
 # Scripts
-T.configure(__name__, T.DEBUG)
+T.configure(__name__, T.INFO)
 
 if __name__ == "__main__":
     pass
