@@ -98,7 +98,7 @@ class PirSkill(AbstractSkill):
                     led_inv=False):
         super().__init__(dev_id, skill_entity)
         self._skill_name = "PIR skill"
-        self._pub_state = UserPubs("pir/status", dev_id, "std", skill_entity)
+        self._pub_state = UserPubs("pir/state", dev_id, "std", skill_entity)
 
         self._pir_pin = pir_pin
         self._led_pin = led_pin
@@ -120,7 +120,7 @@ class PirSkill(AbstractSkill):
 
         if self._pir_pin != _NO_VALUE:
             self._pir_gpio = machine.Pin(self._pir_pin, machine.Pin.IN,
-                                            machine.Pin.PULL_DOWN) 
+                                            machine.Pin.PULL_UP)
         if self._led_pin != _NO_VALUE:
             self._led_gpio = machine.Pin(self._led_pin, machine.Pin.OUT)
             T.trace(__name__, T.DEBUG, 'led pin configured: ' + str(self._led_pin))
@@ -138,6 +138,7 @@ class PirSkill(AbstractSkill):
 
         if self._pir_gpio != None:
             new_pir_state = self._pir_gpio.value()
+            #T.trace(__name__, T.DEBUG, 'PIR signal:' + str(new_pir_state))
             if new_pir_state != self._current_state:
                 self._current_state = new_pir_state
                 self._current_state_payload = _PIR_STATE_DICT[self._current_state]
@@ -197,7 +198,7 @@ class PirSkill(AbstractSkill):
 
 ################################################################################
 # Scripts
-T.configure(__name__, T.INFO)
+T.configure(__name__, T.DEBUG)
 
 if __name__ == "__main__":
     # execute only if run as a script

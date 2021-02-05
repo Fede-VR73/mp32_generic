@@ -160,6 +160,22 @@ def _test_input_pin(pin_nr):
     print('Pin high states: ' + str(high))
 
 ################################################################################
+# @brief    This function tests the PIR sensor
+# @return   none
+################################################################################
+def test_pir():
+    data_gpio = Pin(_PIR_DATA_GPIO, Pin.IN, Pin.PULL_DOWN)
+    pwr_gpio = Pin(_PIR_PWR_GPIO , Pin.OUT)
+
+    pwr_gpio.on()
+    sleep(2)
+    for i in range(0, 2000):
+        print(data_gpio.value())
+        sleep(20 / 500.0)
+    pwr_gpio.off()
+
+
+################################################################################
 # Classes
     ############################################################################
     # Member Variables
