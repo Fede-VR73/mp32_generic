@@ -16,6 +16,7 @@ from machine import Pin
 
 _GPIO_0         = 0
 _GPIO_2         = 2
+_GPIO_4         = 4
 _GPIO_25        = 25
 _GPIO_26        = 26
 _GPIO_27        = 27
@@ -43,6 +44,7 @@ _TEMT_PWR_GPIO  = _GPIO_32
 _SWITCH0_GPIO   = _GPIO_0
 _DHT22_DAT_GPIO = _GPIO_25
 _PIR_DATA_GPIO  = _GPIO_17
+_SWITCH_GPIO4   = _GPIO_4
 
 #ADC pins
 _TEMP_DAT_ADC   = _GPIO_32
@@ -164,7 +166,7 @@ def _test_input_pin(pin_nr):
 # @return   none
 ################################################################################
 def test_pir():
-    data_gpio = Pin(_PIR_DATA_GPIO, Pin.IN, Pin.PULL_DOWN)
+    data_gpio = Pin(_PIR_DATA_GPIO, Pin.IN, Pin.PULL_UP)
     pwr_gpio = Pin(_PIR_PWR_GPIO , Pin.OUT)
 
     pwr_gpio.on()
@@ -186,3 +188,7 @@ def test_pir():
 # Scripts
 if __name__ == "__main__":
     print('--- hardware test script ---')
+    #test_led2()
+    #test_led18()
+    #test_led19()
+    #test_led21()

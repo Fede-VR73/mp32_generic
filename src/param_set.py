@@ -1,10 +1,9 @@
 ################################################################################
-# filename: user_boot.py
+# filename: param_set.py
 # date: 23. Sept. 2020
 # username: winkste
 # name: Stephan Wink
-# description: This module is the local project dependent boot module. It is
-# expected to be called within the standard boot file in the root directory.
+# description: This module is the parameter interface module.
 
 ################################################################################
 
