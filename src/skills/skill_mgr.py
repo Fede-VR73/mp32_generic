@@ -129,22 +129,6 @@ def start_skill_manager(id, cap):
 
     _start_multi_sense(id)
 
-    #skill = SwitchSkill(id, "0", _SWITCH_GPIO, SWITCH_SKILL_MODE_POLL, _SWITCH_LED_GPIO, True)
-    #skill.start_skill()
-    #active_skills.append(skill)
-    #T.trace(__name__, T.INFO, skill.get_skill_name() + " started")
-
-    #skill = NeopixSkill(id, '0', _NEO_DATA_GPIO)
-    #skill.start_skill()
-    #active_skills.append(skill)
-    #T.trace(__name__, T.INFO, skill.get_skill_name() + ' started')
-
-    #skill = RelaySkill(id, "0", _RELAY_OUT_GPIO, _RELAY_LED_GPIO, 0)
-    #skill.start_skill()
-    #active_skills.append(skill)
-    #T.trace(__name__, T.INFO, skill.get_skill_name() + " started")
-
-
     T.trace(__name__, T.INFO, 'skill manager started...')
 
 ################################################################################

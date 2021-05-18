@@ -55,6 +55,8 @@ def do_user_boot():
 
     T.configure(__name__, T.DEBUG)
     T.trace(__name__, T.DEBUG, 'user boot...')
+
+    # turn off vendor O/S debugging messages
     esp.osdebug(None)
 
     pins = UserPins()

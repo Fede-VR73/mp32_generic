@@ -10,6 +10,7 @@
 ################################################################################
 # Imports
 import sys
+import os
 
 ################################################################################
 # Variables
@@ -40,6 +41,9 @@ _level_color = {
 _stream = sys.stderr
 _level = DEBUG
 _tracer = {}
+
+_file_log_level = INFO
+_file_max_log_size = 16000
 
 ################################################################################
 # Functions
@@ -186,6 +190,34 @@ class Trace:
                 msg = msg % args
 
             print(levelcolor, levelname, ":", self.name, ":", msg, "\033[0m", sep="", file=_stream)
+            self._log_to_file(level, msg)
+
+    ############################################################################
+    # @brief    handles the file logging
+    # @param    level    level identifier
+    # @param    msg     trace message
+    # @return   none
+    ############################################################################
+    def _log_to_file(self, level, msg):
+        if _file_log_level <= level:
+            try:
+                file_stat = os.stat('.logs')
+                if file_stat[6] > _file_max_log_size:
+                    levelname = self._get_level_str(WARNING)
+                    msg = 'Maximum log file size reached'
+                    print(levelname, ':', self.name, ':', msg, file=_stream)
+                    return
+
+            except OSError:
+                #file not found, try to log
+                pass
+
+            levelname = self._get_level_str(level)
+            levelcolor = self._get_level_color(level)
+            f = open('.logs', 'a')
+            #print(levelname, ":", self.name, ":", msg, file=f)
+            print(levelcolor, levelname, ":", self.name, ":", msg, "\033[0m", sep="", file=f)
+            f.close()
 
     ############################################################################
     # @brief    set a debug trace message
@@ -227,7 +259,6 @@ class Trace:
 # Scripts
 if __name__ == "__main__":
     print("--- trace test script ---")
-    print('--- trace test script ---')
     info("This is an information.")
     debug("This is a debug message.")
     warning("This is a warning.")
@@ -238,5 +269,3 @@ if __name__ == "__main__":
     #not displayed because of the criticality level configuration
     trace('TRACE', DEBUG, 'This is trace DEBUG')
     trace('TRACE', INFO, 'This is trace INFO')
-    mytuple = ("apple", "banana", "cherry")
-    print('tuple test:' + mytuple)

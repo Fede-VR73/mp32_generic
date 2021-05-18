@@ -173,8 +173,8 @@ class SwitchSkill(AbstractSkill):
                 self._led_gpio.value(self._current_state)
                 T.trace(__name__, T.DEBUG, 'led state:' + str(self._current_state))
             else:
-                self._led_gpio.value(_PIR_STATE_DICT_INV[self._current_state])
-                T.trace(__name__, T.DEBUG, 'led state:' + str(_PIR_STATE_DICT_INV[self._current_state]))
+                self._led_gpio.value(_SWITCH_STATE_DICT_INV[self._current_state])
+                T.trace(__name__, T.DEBUG, 'led state:' + str(_SWITCH_STATE_DICT_INV[self._current_state]))
             self._led_gpio = None
 
 ################################################################################

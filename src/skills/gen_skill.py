@@ -33,17 +33,20 @@ class GenSkill(AbstractSkill):
     ############################################################################
     # Member Attributes
     _device_info_request = None
-    pub_fw_ident = None
-    pub_fw_version = None
-    pub_fw_desc = None
-    pub_device_ip = None
+    _pub_fw_ident = None
+    _pub_fw_version = None
+    _pub_fw_desc = None
+    _pub_device_ip = None
+    _pub_info_request_pending = False
+    _fw_update_request = None
 
-    app_info = None
+    _app_info = None
 
-    EXECUTION_PERIOD = 5000
+    _EXECUTION_PERIOD = 5000
 
-    health_counter = 0
-    pub_health_counter = None
+    _health_counter = 0
+    _pub_health_counter = None
+
     ############################################################################
     # Member Functions
 
@@ -57,14 +60,16 @@ class GenSkill(AbstractSkill):
         super().__init__(dev_id, skill_entity)
         self._skill_name = "gen skill"
         self._device_info_request = UserSubs(self, "gen/info", dev_id)
-        self.pub_fw_ident = UserPubs("gen/fwident", dev_id)
-        self.pub_fw_version = UserPubs("gen/fwversion", dev_id)
-        self.pub_fw_desc = UserPubs("gen/desc", dev_id)
-        self.pub_device_ip = UserPubs("gen/ip", dev_id)
-        self.app_info = AppInfo()
+        self._fw_update_request = UserSubs(self, "gen/update", dev_id)
+        self._pub_fw_ident = UserPubs("gen/fwident", dev_id)
+        self._pub_fw_version = UserPubs("gen/fwversion", dev_id)
+        self._pub_fw_desc = UserPubs("gen/desc", dev_id)
+        self._pub_device_ip = UserPubs("gen/ip", dev_id)
+        self._app_info = AppInfo()
         self.skill_name = "generic skill"
-        self.pub_health_counter = UserPubs("health/tic", dev_id)
-        self.health_counter = 0
+        self._pub_health_counter = UserPubs("health/tic", dev_id)
+        self._health_counter = 0
+        self._pub_info_request_pending = True
 
     ############################################################################
     # @brief    starts the skill
@@ -73,7 +78,6 @@ class GenSkill(AbstractSkill):
     def start_skill(self):
         self._device_info_request.subscribe()
 
-        self._publish_gen_info()
 
     ############################################################################
     # @brief    executes the skill cyclic task
@@ -81,10 +85,13 @@ class GenSkill(AbstractSkill):
     ############################################################################
     def execute_skill(self):
         current_time = time.ticks_ms()
-        if abs(time.ticks_diff(current_time, self._last_time)) > self.EXECUTION_PERIOD:
+        if abs(time.ticks_diff(current_time, self._last_time)) > self._EXECUTION_PERIOD:
             self._last_time = current_time
-            self.health_counter = self.health_counter + 1
-            self.pub_health_counter.publish(str(self.health_counter))
+            self._health_counter = self._health_counter + 1
+            self._pub_health_counter.publish(str(self._health_counter))
+        if self._pub_info_request_pending:
+            self._publish_gen_info()
+            self._pub_info_request_pending = False
 
     ############################################################################
     # @brief    executes the incoming subscription callback handler
@@ -95,7 +102,11 @@ class GenSkill(AbstractSkill):
     def execute_subscription(self, topic, data):
         if self._device_info_request.compare_topic(topic):
             T.trace(__name__, T.DEBUG, 'generic information request received')
-            self._publish_gen_info()
+            #handle publication in main loop, don't public in subscription ISR
+            #handler
+            self._pub_info_request_pending = True
+        elif self._fw_update_request.compare_topic(topic):
+            T.trace(__name__, T.DEBUG, 'firmware update request received')
         else:
             T.trace(__name__, T.ERROR, 'unexpected subscription')
             T.trace(__name__, T.DEBUG, 'topic: ' + topic)
@@ -114,12 +125,12 @@ class GenSkill(AbstractSkill):
     # @return   none
     ############################################################################
     def _publish_gen_info(self):
-        self.pub_fw_ident.publish(self.app_info.get_fw_identifier())
-        self.pub_fw_version.publish(self.app_info.get_fw_version())
-        self.pub_fw_desc.publish(self.app_info.get_description())
+        self._pub_fw_ident.publish(self._app_info.get_fw_identifier())
+        self._pub_fw_version.publish(self._app_info.get_fw_version())
+        self._pub_fw_desc.publish(self._app_info.get_description())
         sta_if = net.WLAN(net.STA_IF)
         ip_cfg = sta_if.ifconfig()
-        self.pub_device_ip.publish(ip_cfg[0])
+        self._pub_device_ip.publish(ip_cfg[0])
 
 ################################################################################
 # Scripts

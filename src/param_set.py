@@ -14,6 +14,23 @@ import os
 import src.trace as T
 
 ################################################################################
+# Variables
+_para_set = None
+
+################################################################################
+# Functions
+
+################################################################################
+# @brief    returns the parameter set, if not read out, it reads it from file
+# @return   parameter set object
+################################################################################
+def get_parameter_obj():
+    if _para_set = None:
+        _para_set = ParamSet()
+    return _para_set
+
+
+################################################################################
 # Classes
 class ParamSet:
 
@@ -144,3 +161,7 @@ class ParamSet:
 # Scripts
 if __name__ == "__main__":
     print('--- param_set ---')
+    par = get_parameter_obj()
+    print(par.get_mqtt_broker_ip)
+    print(par.get_gitHub_repo)
+    

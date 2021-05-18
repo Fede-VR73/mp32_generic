@@ -87,4 +87,4 @@ class AbstractSkill:
 ################################################################################
 # Scripts
 
-T.configure(__name__, T.DEBUG)
+T.configure(__name__, T.INFO)
