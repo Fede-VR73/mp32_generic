@@ -16,6 +16,21 @@ import os
 
 ################################################################################
 # Functions
+
+################################################################################
+# @brief    Main function of script
+# @return   none
+################################################################################
+def main():
+    print('--- log file dump script ---')
+    print('retrieving file size...')
+    print_log_file_size()
+    print('dumping file...')
+    dump_log_file()
+    print('deleting file...')
+    delete_log_file()
+
+
 ################################################################################
 # @brief    Print log file file size
 # @return   none
@@ -69,10 +84,4 @@ def delete_log_file():
 ################################################################################
 # Scripts
 if __name__ == "__main__":
-    print('--- log file dump script ---')
-    print('retrieving file size...')
-    print_log_file_size()
-    print('dumping file...')
-    dump_log_file()
-    print('deleting file...')
-    delete_log_file()
+    main()
