@@ -36,7 +36,10 @@ get actual interface
 ```
 ls /dev/cu.*
 ```
-
+enable interface for user on linux
+```
+sudo chown :winkste /dev/ttyUSB0
+```
 erase actual target
 ```
 esptool.py --port /dev/cu.SLAB_USBtoUART erase_flash
