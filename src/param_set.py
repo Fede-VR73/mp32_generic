@@ -21,14 +21,24 @@ _para_set = None
 # Functions
 
 ################################################################################
+# @brief    Main function of this module, mainly used for testing
+# @return   None
+################################################################################
+def main():
+    print('--- param_set ---')
+    par = get_parameter_obj()
+    print(par.get_mqtt_broker_ip())
+    print(par.get_gitHub_repo())
+
+################################################################################
 # @brief    returns the parameter set, if not read out, it reads it from file
 # @return   parameter set object
 ################################################################################
 def get_parameter_obj():
-    if _para_set = None:
+    global _para_set
+    if _para_set == None:
         _para_set = ParamSet()
     return _para_set
-
 
 ################################################################################
 # Classes
@@ -160,8 +170,4 @@ class ParamSet:
 ################################################################################
 # Scripts
 if __name__ == "__main__":
-    print('--- param_set ---')
-    par = get_parameter_obj()
-    print(par.get_mqtt_broker_ip)
-    print(par.get_gitHub_repo)
-    
+    main()
