@@ -12,9 +12,9 @@
 # Imports
 from src.ota_updater import download_and_install_update_if_available
 from src.param_set import ParamSet
-from src.user_pins import UserPins
 from src.mqtt.user_mqtt import start_mqtt_client
 from src.app_info import AppInfo
+import src.sys_mode as sys_mode
 import esp
 import network
 import src.trace as T
@@ -59,16 +59,25 @@ def do_user_boot():
     # turn off vendor O/S debugging messages
     esp.osdebug(None)
 
-    pins = UserPins()
-    pins.led_on()
-    pinStateHigh = pins.sample_repl_req_low_state()
-    if 50 < pinStateHigh:
-        repl_mode = True
+    sys_mode.initialize_mode_module()
+    sys_mode.goto_boot_mode()
+    repl_mode = sys_mode.long_check_for_repl_via_button_request()
+    if True == repl_mode:
         T.trace(__name__, T.DEBUG, 'repl request detected...')
+        sys_mode.goto_repl_mode()
     else:
-        repl_mode = False
         T.trace(__name__, T.DEBUG, 'standard user detected...')
-    pins.led_off()
+
+    #pins = UserPins()
+    #pins.led_on()
+    #pinStateHigh = pins.sample_repl_req_low_state()
+    #if 50 < pinStateHigh:
+#        repl_mode = True
+#        T.trace(__name__, T.DEBUG, 'repl request detected...')
+#    else:
+#        repl_mode = False
+#        T.trace(__name__, T.DEBUG, 'standard user detected...')
+#    pins.led_off()
 
     T.trace(__name__, T.DEBUG, 'initialize parameter sets...')
     para = ParamSet()
@@ -78,7 +87,7 @@ def do_user_boot():
     app.print_partnumber()
     app.print_descrption()
 
-    if True != repl_mode:
+    if sys_mode.is_boot_mode_active():
         T.trace(__name__, T.DEBUG, 'connect to user network...')
         connect_to_wifi_network(para.get_wifi_ssid(), para.get_wifi_password())
 

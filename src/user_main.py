@@ -9,15 +9,16 @@
 
 ################################################################################
 # Imports
-import src.user_boot
 from src.mqtt.user_mqtt import check_non_blocking_for_msg
 from src.mqtt.user_mqtt import start_mqtt_client
 from src.mqtt.user_mqtt import stop_mqtt_client
 from time import sleep
 from src.user_pins import UserPins
 from src.param_set import ParamSet
+import src.sys_mode as sys_mode
 import src.skills.skill_mgr as skill_mgr
 import src.trace as T
+from machine import reset
 ################################################################################
 # Methods
 
@@ -62,16 +63,22 @@ def stop_user_processes():
 def do_user_main():
 
     T.configure(__name__, T.INFO)
-    pins = UserPins()
     T.trace(__name__, T.INFO, 'user main ...')
+    sys_mode.goto_normal_mode()
 
-    if True != src.user_boot.repl_mode:
+    if sys_mode.is_normal_mode_active():
         T.trace(__name__, T.DEBUG, 'user mode...')
         do_user_initialize()
-        #checks the repl pin every task cycle for 100msec
-        while 5 > pins.sample_repl_req_low_state(100):
+        while sys_mode.is_normal_mode_active():
             do_user_processes()
+            if sys_mode.short_check_for_repl_via_button_request():
+                goto_repl_mode()
         else:
             stop_user_processes()
 
-    T.trace(__name__, T.DEBUG, 'repl mode...')
+    if sys_mode.is_reset_mode_active():
+        T.trace(__name__, T.DEBUG, 'reset mode...')
+        reset()
+
+    if sys_mode.is_repl_mode_active():
+        T.trace(__name__, T.DEBUG, 'repl mode...')

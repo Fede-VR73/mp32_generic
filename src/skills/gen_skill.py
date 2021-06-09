@@ -15,6 +15,7 @@ from src.mqtt.user_subs import UserSubs
 from src.mqtt.user_pubs import UserPubs
 from src.app_info import AppInfo
 import src.trace as T
+import src.sys_mode as sys_mode
 import network as net
 
 ################################################################################
@@ -38,7 +39,7 @@ class GenSkill(AbstractSkill):
     _pub_fw_desc = None
     _pub_device_ip = None
     _pub_info_request_pending = False
-    _fw_update_request = None
+    _gen_cmd_request = None
 
     _app_info = None
 
@@ -46,6 +47,10 @@ class GenSkill(AbstractSkill):
 
     _health_counter = 0
     _pub_health_counter = None
+
+    _CMD_RESET_REQUEST  = 'reset'
+    _CMD_REPL_REQUEST   = 'repl'
+    _CMD_FW_UPDATE      = 'update'
 
     ############################################################################
     # Member Functions
@@ -60,7 +65,7 @@ class GenSkill(AbstractSkill):
         super().__init__(dev_id, skill_entity)
         self._skill_name = "gen skill"
         self._device_info_request = UserSubs(self, "gen/info", dev_id)
-        self._fw_update_request = UserSubs(self, "gen/update", dev_id)
+        self._gen_cmd_request = UserSubs(self, "gen/cmd", dev_id)
         self._pub_fw_ident = UserPubs("gen/fwident", dev_id)
         self._pub_fw_version = UserPubs("gen/fwversion", dev_id)
         self._pub_fw_desc = UserPubs("gen/desc", dev_id)
@@ -77,6 +82,7 @@ class GenSkill(AbstractSkill):
     ############################################################################
     def start_skill(self):
         self._device_info_request.subscribe()
+        self._gen_cmd_request.subscribe()
 
 
     ############################################################################
@@ -105,8 +111,20 @@ class GenSkill(AbstractSkill):
             #handle publication in main loop, don't public in subscription ISR
             #handler
             self._pub_info_request_pending = True
-        elif self._fw_update_request.compare_topic(topic):
-            T.trace(__name__, T.DEBUG, 'firmware update request received')
+        elif self._gen_cmd_request.compare_topic(topic):
+            T.trace(__name__, T.DEBUG, 'generic command request received')
+            T.trace(__name__, T.DEBUG, 'data: ' + data)
+            if data == self._CMD_RESET_REQUEST:
+                sys_mode.goto_reset_mode()
+            elif data == self._CMD_REPL_REQUEST:
+                sys_mode.goto_repl_mode()
+            elif data == self._CMD_FW_UPDATE:
+                sys_mode.goto_reset_mode()
+            else:
+                T.trace(__name__, T.ERROR, 'unexpected data in subscription')
+                T.trace(__name__, T.DEBUG, 'topic: ' + topic)
+                T.trace(__name__, T.DEBUG, 'data: ' + data)
+
         else:
             T.trace(__name__, T.ERROR, 'unexpected subscription')
             T.trace(__name__, T.DEBUG, 'topic: ' + topic)

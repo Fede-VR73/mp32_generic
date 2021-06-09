@@ -33,6 +33,14 @@ def force_github_update():
     f.close()
 
 ################################################################################
+# @brief    This function deletes the pymakr version file from the device. this
+#           will retrigger a complete update by the pymakr plugin.
+# @return   none
+################################################################################
+def force_pymakr_update():
+    os.remove('project.pymakr')
+
+################################################################################
 # @brief    This function deletes all files except the boot.py and main.py
 # @return   none
 ################################################################################
