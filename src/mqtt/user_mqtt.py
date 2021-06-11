@@ -17,7 +17,7 @@ from src.mqtt.user_subs import set_mqtt_subscribe_cb
 from src.mqtt.user_subs import set_mqtt_unsubscribe_cb
 from src.mqtt.user_pubs import UserPubs
 from src.mqtt.user_pubs import set_mqtt_publish_cb
-import src.trace as T
+import src.utils.trace as T
 
 ################################################################################
 # Variables

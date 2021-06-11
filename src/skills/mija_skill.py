@@ -50,12 +50,12 @@ import time
 from src.skills.abs_skill import AbstractSkill
 from src.mqtt.user_subs import UserSubs
 from src.mqtt.user_pubs import UserPubs
-from src.ble_drv import BleListener
-from src.ble_drv import ble_append_listener
-from src.ble_drv import ble_remove_listener
+from src.utils.ble_drv import BleListener
+from src.utils.ble_drv import ble_append_listener
+from src.utils.ble_drv import ble_remove_listener
 from micropython import const
-import src.ble_drv
-import src.trace as T
+import src.utils.ble_drv
+import src.utils.trace as T
 ################################################################################
 # Variables
 
@@ -163,7 +163,7 @@ class MijaSkill(AbstractSkill):
     # @return   none
     ############################################################################
     def start_skill(self):
-        self._listener = src.ble_drv.BleListener(self._location, self._data_receive_cb, self._address)
+        self._listener = src.utils.ble_drv.BleListener(self._location, self._data_receive_cb, self._address)
         ble_append_listener(self._listener)
 
 

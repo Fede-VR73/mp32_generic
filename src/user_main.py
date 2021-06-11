@@ -14,10 +14,10 @@ from src.mqtt.user_mqtt import start_mqtt_client
 from src.mqtt.user_mqtt import stop_mqtt_client
 from time import sleep
 from src.user_pins import UserPins
-from src.param_set import ParamSet
-import src.sys_mode as sys_mode
+from src.utils.param_set import ParamSet
+import src.utils.sys_mode as sys_mode
 import src.skills.skill_mgr as skill_mgr
-import src.trace as T
+import src.utils.trace as T
 from machine import reset
 ################################################################################
 # Methods

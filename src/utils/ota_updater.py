@@ -13,7 +13,7 @@ import os
 import gc
 import machine
 from time import sleep
-import src.trace as T
+import src.utils.trace as T
 
 ################################################################################
 # Functions

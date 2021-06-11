@@ -15,7 +15,7 @@ from src.mqtt.user_subs import UserSubs
 from src.mqtt.user_pubs import UserPubs
 import dht
 import machine
-import src.trace as T
+import src.utils.trace as T
 
 ################################################################################
 # Variables

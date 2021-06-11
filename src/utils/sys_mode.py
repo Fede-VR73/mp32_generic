@@ -11,7 +11,7 @@
 # Imports
 from time import sleep
 from machine import Pin
-import src.trace as T
+import src.utils.trace as T
 
 ################################################################################
 # Variables

@@ -12,7 +12,7 @@
 ################################################################################
 # Imports
 from src.skills.abs_skill import AbstractSkill
-import src.trace as T
+import src.utils.trace as T
 
 ################################################################################
 # Variables

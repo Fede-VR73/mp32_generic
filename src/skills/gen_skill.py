@@ -14,8 +14,8 @@ from src.skills.abs_skill import AbstractSkill
 from src.mqtt.user_subs import UserSubs
 from src.mqtt.user_pubs import UserPubs
 from src.app_info import AppInfo
-import src.trace as T
-import src.sys_mode as sys_mode
+import src.utils.trace as T
+import src.utils.sys_mode as sys_mode
 import network as net
 
 ################################################################################

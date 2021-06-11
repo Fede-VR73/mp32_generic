@@ -9,7 +9,7 @@
 ################################################################################
 # Imports
 from src.user_boot import do_user_boot
-import src.trace as T
+import src.utils.trace as T
 
 ################################################################################
 # Variables

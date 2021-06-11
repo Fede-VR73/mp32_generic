@@ -10,14 +10,14 @@
 
 ################################################################################
 # Imports
-from src.ota_updater import download_and_install_update_if_available
-from src.param_set import ParamSet
+from src.utils.ota_updater import download_and_install_update_if_available
+from src.utils.param_set import ParamSet
 from src.mqtt.user_mqtt import start_mqtt_client
 from src.app_info import AppInfo
-import src.sys_mode as sys_mode
+import src.utils.sys_mode as sys_mode
 import esp
 import network
-import src.trace as T
+import src.utils.trace as T
 from src.utils.pin_cfg import BOOT_LED_GPIO
 from src.utils.pin_cfg import REPL_REQUEST_GPIO
 

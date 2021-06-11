@@ -15,10 +15,10 @@
 ################################################################################
 # Imports
 import time
-import src.trace as T
-from src.ble_drv import BleListener
-from src.ble_drv import ble_append_listener
-from src.ble_drv import ble_remove_listener
+import src.utils.trace as T
+from src.utils.ble_drv import BleListener
+from src.utils.ble_drv import ble_append_listener
+from src.utils.ble_drv import ble_remove_listener
 
 ################################################################################
 # Functions

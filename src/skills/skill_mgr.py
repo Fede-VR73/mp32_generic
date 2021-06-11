@@ -33,7 +33,7 @@ from src.utils.pin_cfg import TEMP_DAT_ADC
 from src.utils.pin_cfg import SWITCH_GPIO
 from src.utils.pin_cfg import SWITCH_LED_GPIO
 
-import src.trace as T
+import src.utils.trace as T
 ################################################################################
 # Variables
 

@@ -15,7 +15,7 @@ import struct
 import time
 import micropython
 from micropython import const
-import src.trace as T
+import src.utils.trace as T
 
 ################################################################################
 # Variables
