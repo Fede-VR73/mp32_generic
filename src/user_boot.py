@@ -18,6 +18,8 @@ import src.sys_mode as sys_mode
 import esp
 import network
 import src.trace as T
+from src.utils.pin_cfg import BOOT_LED_GPIO
+from src.utils.pin_cfg import REPL_REQUEST_GPIO
 
 ################################################################################
 # Variables
@@ -59,7 +61,7 @@ def do_user_boot():
     # turn off vendor O/S debugging messages
     esp.osdebug(None)
 
-    sys_mode.initialize_mode_module()
+    sys_mode.initialize_mode_module(REPL_REQUEST_GPIO, BOOT_LED_GPIO)
     sys_mode.goto_boot_mode()
     repl_mode = sys_mode.long_check_for_repl_via_button_request()
     if True == repl_mode:

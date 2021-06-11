@@ -20,7 +20,8 @@ import os
 ################################################################################
 def main():
     #force_github_update()
-    delete_all()
+    #delete_all()
+    force_pymakr_update()
 
 ################################################################################
 # @brief    This function changes the .version file to 0.0.0 to force a github

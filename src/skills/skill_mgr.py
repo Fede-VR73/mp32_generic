@@ -21,35 +21,21 @@ from src.skills.relay_skill import RelaySkill
 from src.skills.switch_skill import SwitchSkill
 from src.skills.switch_skill import SWITCH_SKILL_MODE_POLL
 
+from src.utils.pin_cfg import RELAY_OUT_GPIO
+from src.utils.pin_cfg import NEO_DATA_GPIO
+from src.utils.pin_cfg import DHT22_PWR_GPIO
+from src.utils.pin_cfg import DHT22_DAT_GPIO
+from src.utils.pin_cfg import PIR_PWR_GPIO
+from src.utils.pin_cfg import PIR_DATA_GPIO
+from src.utils.pin_cfg import PIR_LED_GPIO
+from src.utils.pin_cfg import TEMP_PWR_GPIO
+from src.utils.pin_cfg import TEMP_DAT_ADC
+from src.utils.pin_cfg import SWITCH_GPIO
+from src.utils.pin_cfg import SWITCH_LED_GPIO
+
 import src.trace as T
 ################################################################################
 # Variables
-
-_GPIO_25        = 25
-_GPIO_26        = 26
-_GPIO_27        = 27
-_GPIO_33        = 33
-_GPIO_32        = 32
-_GPIO_35        = 35
-_GPIO_17        = 17
-_GPIO_21        = 21
-_GPIO_18        = 18
-_GPIO_19        = 19
-_GPIO_16        = 16
-_GPIO_23        = 23
-_GPIO_04        = 4
-_RELAY_OUT_GPIO = _GPIO_21
-#_NEO_DATA_GPIO  = _GPIO_27
-_NEO_DATA_GPIO  = _GPIO_16
-_DHT22_PWR_GPIO = _GPIO_26
-_DHT22_DAT_GPIO = _GPIO_25
-_PIR_PWR_GPIO   = _GPIO_23
-_PIR_DATA_GPIO  = _GPIO_17
-_PIR_LED_GPIO   = _GPIO_18
-_TEMP_PWR_GPIO  = _GPIO_32
-_TEMP_DAT_ADC   = _GPIO_35
-_SWITCH_GPIO    = _GPIO_04
-_SWITCH_LED_GPIO = _GPIO_19
 
 active_skills = []
 
@@ -84,32 +70,32 @@ def _start_multi_sense(id):
     active_skills.append(skill)
     T.trace(__name__, T.INFO, skill.get_skill_name() + " started")
 
-    skill = DhtSkill(id, "0", _DHT22_DAT_GPIO, _DHT22_PWR_GPIO)
+    skill = DhtSkill(id, "0", DHT22_DAT_GPIO, DHT22_PWR_GPIO)
     skill.start_skill()
     active_skills.append(skill)
     T.trace(__name__, T.INFO, skill.get_skill_name() + " started")
 
-    skill = PirSkill(id, "0", _PIR_DATA_GPIO, _PIR_PWR_GPIO, PIR_SKILL_MODE_POLL, _PIR_LED_GPIO)
+    skill = PirSkill(id, "0", PIR_DATA_GPIO, PIR_PWR_GPIO, PIR_SKILL_MODE_POLL, PIR_LED_GPIO)
     skill.start_skill()
     active_skills.append(skill)
     T.trace(__name__, T.INFO, skill.get_skill_name() + " started")
 
-    skill = Temt6000Skill(id, "0", _TEMP_DAT_ADC, _TEMP_PWR_GPIO)
+    skill = Temt6000Skill(id, "0", TEMP_DAT_ADC, TEMP_PWR_GPIO)
     skill.start_skill()
     active_skills.append(skill)
     T.trace(__name__, T.INFO, skill.get_skill_name() + " started")
 
-    skill = NeopixSkill(id, '0', _NEO_DATA_GPIO)
+    skill = NeopixSkill(id, '0', NEO_DATA_GPIO)
     skill.start_skill()
     active_skills.append(skill)
     T.trace(__name__, T.INFO, skill.get_skill_name() + ' started')
 
-    skill = RelaySkill(id, "0", _RELAY_OUT_GPIO)
+    skill = RelaySkill(id, "0", RELAY_OUT_GPIO)
     skill.start_skill()
     active_skills.append(skill)
     T.trace(__name__, T.INFO, skill.get_skill_name() + " started")
 
-    skill = SwitchSkill(id, "0", _SWITCH_GPIO, SWITCH_SKILL_MODE_POLL, _SWITCH_LED_GPIO, True)
+    skill = SwitchSkill(id, "0", SWITCH_GPIO, SWITCH_SKILL_MODE_POLL, SWITCH_LED_GPIO, True)
     skill.start_skill()
     active_skills.append(skill)
     T.trace(__name__, T.INFO, skill.get_skill_name() + " started")
