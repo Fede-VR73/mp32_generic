@@ -13,7 +13,6 @@ from src.mqtt.user_mqtt import check_non_blocking_for_msg
 from src.mqtt.user_mqtt import start_mqtt_client
 from src.mqtt.user_mqtt import stop_mqtt_client
 from time import sleep
-from src.user_pins import UserPins
 from src.utils.param_set import ParamSet
 import src.utils.sys_mode as sys_mode
 import src.skills.skill_mgr as skill_mgr
