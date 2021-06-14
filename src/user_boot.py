@@ -13,7 +13,7 @@
 from src.utils.ota_updater import download_and_install_update_if_available
 from src.utils.param_set import ParamSet
 from src.mqtt.user_mqtt import start_mqtt_client
-from src.app_info import AppInfo
+from src.utils.app_info import AppInfo
 import src.utils.sys_mode as sys_mode
 import esp
 import network

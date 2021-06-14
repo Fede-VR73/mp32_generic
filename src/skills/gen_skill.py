@@ -13,7 +13,7 @@ import time
 from src.skills.abs_skill import AbstractSkill
 from src.mqtt.user_subs import UserSubs
 from src.mqtt.user_pubs import UserPubs
-from src.app_info import AppInfo
+from src.utils.app_info import AppInfo
 import src.utils.trace as T
 import src.utils.sys_mode as sys_mode
 import network as net
@@ -43,7 +43,7 @@ class GenSkill(AbstractSkill):
 
     _app_info = None
 
-    _EXECUTION_PERIOD = 5000
+    _EXECUTION_PERIOD = 30000
 
     _health_counter = 0
     _pub_health_counter = None

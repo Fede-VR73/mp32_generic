@@ -106,7 +106,7 @@ class MijaSkill(AbstractSkill):
     ############################################################################
     # Member Attributes
     device_info_request = None
-    EXECUTION_PERIOD = 20000
+    EXECUTION_PERIOD = 30000
 
     _mija_temp = None
     _mija_hum = None
