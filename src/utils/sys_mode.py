@@ -76,9 +76,6 @@ def main():
     else:
         T.trace(__name__, T.ERROR, 'test failed')
 
-
-
-
 ################################################################################
 # @brief    initializes the mode module
 # @param    repl_req_pin, input GPIO pin number for user repl request
@@ -99,10 +96,6 @@ def initialize_mode_module(repl_req_pin=0xff, boot_led_pin=0xff):
         _boot_led_gpio = led = Pin(_boot_led_pin, Pin.OUT)
 
     _led_off()
-
-    #self.repl_req_pin = Pin(4, Pin.IN) # defines the button to repl request
-    #self.repl_req_pin = Pin(0, Pin.IN) # defines the button to repl request
-    #self.led = Pin(2, Pin.OUT) # defines output pin 5 for on board LED
 
     _current_mode   = _MODE_HW_START
 

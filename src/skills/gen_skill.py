@@ -43,7 +43,7 @@ class GenSkill(AbstractSkill):
 
     _app_info = None
 
-    _EXECUTION_PERIOD = 30000
+    _EXECUTION_PERIOD = 10000
 
     _health_counter = 0
     _pub_health_counter = None

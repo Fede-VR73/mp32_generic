@@ -40,11 +40,14 @@ def do_user_initialize():
 
 ################################################################################
 # @brief    user cyclic task methods
-# @return   none
+# @return   True if process execution is successful, else False
 ################################################################################
 def do_user_processes():
-    check_non_blocking_for_msg()
-    skill_mgr.execute_skills()
+    exec_result = True
+
+    exec_result = exec_result & check_non_blocking_for_msg()
+    exec_result = exec_result & skill_mgr.execute_skills()
+    return exec_result
 
 ################################################################################
 # @brief    stop user processes
@@ -69,7 +72,8 @@ def do_user_main():
         T.trace(__name__, T.DEBUG, 'user mode...')
         do_user_initialize()
         while sys_mode.is_normal_mode_active():
-            do_user_processes()
+            if False == do_user_processes():
+                goto_reset_mode()
             if sys_mode.short_check_for_repl_via_button_request():
                 goto_repl_mode()
         else:

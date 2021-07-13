@@ -26,6 +26,31 @@ client = None
 
 ################################################################################
 # Functions
+
+################################################################################
+# @brief    Main function to test and demonstrate the mqtt functionality
+# @return   none
+################################################################################
+def main():
+    T.trace(__name__, T.INFO, 'mqtt client test script')
+    T.trace(__name__, T.INFO, 'connect to broker')
+    start_mqtt_client('umqtt_client', '192.168.178.45', 1883, 'winkste', 'sw10950')
+    T.trace(__name__, T.INFO, 'send 1st test publications')
+    publish('std/dev102/s/test', 'test1')
+    publish('std/dev102/s/test', 'test2')
+    publish('std/dev102/s/test', 'test3')
+    T.trace(__name__, T.INFO, 'soft restart mqtt client')
+    restart()
+    T.trace(__name__, T.INFO, 'send 2nd test publications')
+    publish('std/dev102/s/test', 'test4')
+    publish('std/dev102/s/test', 'test5')
+    publish('std/dev102/s/test', 'test6')
+    T.trace(__name__, T.INFO, 'stop mqtt client')
+    stop_mqtt_client()
+
+
+
+
 ################################################################################
 # @brief    Initializes the mqtt client and connects to the mqtt broker
 # @param    id       client id
@@ -137,7 +162,7 @@ def print_all_subscriptions():
 ################################################################################
 # @brief    This function checks non blocking for an MQTT incoming message
 #           and processes it
-# @return   none
+# @return   True if execution was successful, else False
 ################################################################################
 def check_non_blocking_for_msg():
     global client
@@ -150,7 +175,42 @@ def check_non_blocking_for_msg():
         return False
     except OSError:
         T.trace(__name__, T.ERROR, 'mqtt connection error in check_non_blocking_for_msg...')
+        return(restart())
+        #return False
+
+################################################################################
+# @brief    This function restarts the MQTT client
+# @return   True if execution was successful, else False
+################################################################################
+def restart():
+    global client
+
+    try:
+        #resque subscriptions from old client
+        subs = client.get_subscriptions()
+        id   = client.client_id
+        ip   = client.broker_ip
+        port = client.broker_port
+        user = client.broker_user
+        pwd  = client.broker_pwd
+
+        # stop the client
+        stop_mqtt_client()
+
+        # start the client
+        start_mqtt_client(id, ip, port, user, pwd)
+
+        #re-subscribe resqued topics
+        for obj in subs:
+            subscribe(obj)
+        return True
+    except AttributeError:
+        T.trace(__name__, T.ERROR, 'mqtt client not allocated...')
         return False
+    except OSError:
+        T.trace(__name__, T.ERROR, 'mqtt connection error in restart...')
+        return False
+
 
 ################################################################################
 # Classes
@@ -261,6 +321,18 @@ class UserMqtt:
                 obj.callback_on_arrived_topic(topic, payload)
 
     ############################################################################
+    # @brief    This function returns all subscriptions to a new list
+    # @return   Returns a list of subscriptions
+    ############################################################################
+    def get_subscriptions(self):
+        subscriptions = []
+
+        for obj in self.subscriptions:
+            subscriptions.append(obj)
+
+        return subscriptions
+
+    ############################################################################
     # @brief    This function prints all registered subsciptions
     # @return   none
     ############################################################################
@@ -282,4 +354,4 @@ class UserMqtt:
 T.configure(__name__, T.INFO)
 
 if __name__ == "__main__":
-    print("--- user_mqtt test script ---")
+    main()

@@ -129,12 +129,13 @@ def stop_skill_manager():
 
 ################################################################################
 # @brief    Executes the skill manager
-# @return   none
+# @return   always True, for future skill return values
 ################################################################################
 def execute_skills():
 
     for obj in active_skills:
         obj.execute_skill()
+    return True
 
 ################################################################################
 # Classes
