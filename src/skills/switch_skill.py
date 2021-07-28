@@ -25,6 +25,7 @@ import src.utils.trace as T
 ################################################################################
 # Variables
 _NO_VALUE = 0xff
+_SWITCH_OFF_TIME = 1000
 
 
 SWITCH_SKILL_MODE_POLL = 0
@@ -68,6 +69,8 @@ class SwitchSkill(AbstractSkill):
     _swith_mode = SWITCH_SKILL_MODE_POLL
 
     _switch_trigger = _SWITCH_STATE_HIGH
+    _switch_state_published = True
+
 
     ############################################################################
     # Member Functions
@@ -143,10 +146,20 @@ class SwitchSkill(AbstractSkill):
     # @return   none
     ############################################################################
     def execute_skill(self):
+
+        current_time = time.ticks_ms()
+        # check if we need to switch back 'ON' to 'OFF' state after time X
+        if self._switch_state_published:
+            if abs(time.ticks_diff(current_time, self._last_time)) > _SWITCH_OFF_TIME:
+                self._pub_state.publish('OFF')
+                self._switch_state_published = False
+
         self._check_switch_state_transition()
         if self._publish_state == True:
             self._publish_state = False
-            self._pub_state.publish('ping')
+            self._pub_state.publish('ON')
+            self._last_time = current_time
+            self._switch_state_published = True
 
 
     ############################################################################

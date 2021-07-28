@@ -65,7 +65,7 @@ class GenSkill(AbstractSkill):
         super().__init__(dev_id, skill_entity)
         self._skill_name = "gen skill"
         self._device_info_request = UserSubs(self, "gen/info", dev_id)
-        self._gen_cmd_request = UserSubs(self, "gen/cmd", dev_id)
+        self._gen_cmd_request = UserSubs(self, "gen/mode", dev_id)
         self._pub_fw_ident = UserPubs("gen/fwident", dev_id)
         self._pub_fw_version = UserPubs("gen/fwversion", dev_id)
         self._pub_fw_desc = UserPubs("gen/desc", dev_id)

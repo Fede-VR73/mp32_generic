@@ -135,14 +135,24 @@ class DhtSkill(AbstractSkill):
             try:
                 self._dht.measure()
             except OSError:
-                self._deactivate_chip()
-                T.trace(__name__, T.ERROR, 'dht measure error')
-                self._dht = None
-                self._activate_chip()
-                self._dht = dht.DHT22(machine.Pin(self._data_pin))
-                if self._dht == None:
-                    T.trace(__name__, T.EROR, 'reinit of dht object failed')
+                self._handle_DHT_error()
         self._deactivate_chip()
+
+    ############################################################################
+    # @brief    handles a DHT communication/chip error
+    # @return   none
+    ############################################################################
+    def _handle_DHT_error(self):
+        self._deactivate_chip()
+        T.trace(__name__, T.ERROR, 'dht measure error')
+        self._dht = None
+        self._activate_chip()
+        self._dht = dht.DHT22(machine.Pin(self._data_pin))
+        if self._dht == None:
+            T.trace(__name__, T.EROR, 'reinit of dht object failed')
+        self._state = self._STATE_HEATUP
+        self._temperature = 0.0
+        self._humidity = 0.0
 
     ############################################################################
     # @brief    publish tempeature and humidity
@@ -153,14 +163,8 @@ class DhtSkill(AbstractSkill):
         self._state = self._STATE_SLEEP
         T.trace(__name__, T.DEBUG, 'publishing...')
         # get a measurement set, either the real measured  or default 0
-        if self._dht != None:
-            self._temperature = round(self._dht.temperature() * self._TEMPERATURE_CORR_FACTOR, 2)
-            self._humidity = round(self._dht.humidity() * self._HUMIDITY_CORR_FACTOR, 2)
-        else:
-            self._temperature = 0.0
-            self._humidity = 0.0
-
-        #self._deactivate_chip()
+        self._temperature = round(self._dht.temperature() * self._TEMPERATURE_CORR_FACTOR, 2)
+        self._humidity = round(self._dht.humidity() * self._HUMIDITY_CORR_FACTOR, 2)
 
         T.trace(__name__, T.DEBUG, 'temperature: ' + str(self._temperature))
         T.trace(__name__, T.DEBUG, 'humidity: ' + str(self._humidity))
