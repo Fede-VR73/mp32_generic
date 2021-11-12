@@ -149,7 +149,7 @@ class DhtSkill(AbstractSkill):
         self._activate_chip()
         self._dht = dht.DHT22(machine.Pin(self._data_pin))
         if self._dht == None:
-            T.trace(__name__, T.EROR, 'reinit of dht object failed')
+            T.trace(__name__, T.ERROR, 'reinit of dht object failed')
         self._state = self._STATE_HEATUP
         self._temperature = 0.0
         self._humidity = 0.0

@@ -36,6 +36,10 @@ from src.utils.pin_cfg import SWITCH_LED_GPIO
 import src.utils.trace as T
 ################################################################################
 # Variables
+# supported skills
+
+_MIA_SENSE_CFG_1 =   0x30
+_MIA_SENSE_CFG_2 =   0x02
 
 active_skills = []
 
@@ -43,19 +47,25 @@ active_skills = []
 # Functions
 
 ################################################################################
-# @brief    Initializes and starts all skills for the multi sensor device
+# @brief    Initializes and starts MIA temperature sensor 1 configuration
 # @param    id       device id
-# @param    cap      capability
 # @return   none
 ################################################################################
-def _start_multi_sense(id):
+def _start_Mia_temp_config_1(id):
 
-    skill = MijaSkill(id, "0", "Badezimmer oben", bytearray([0x58, 0x2d, 0x34, 0x38, 0x64, 0x37]))
+    skill = MijaSkill(id, "1", "Badezimmer unten", bytearray([0x58, 0x2D, 0x34, 0x37, 0x10, 0x86]))
     skill.start_skill()
     active_skills.append(skill)
     T.trace(__name__, T.INFO, skill.get_skill_name() + " started")
 
-    skill = MijaSkill(id, "1", "Badezimmer unten", bytearray([0x58, 0x2D, 0x34, 0x37, 0x10, 0x86]))
+################################################################################
+# @brief    Initializes and starts MIA temperature sensor 2 configuration
+# @param    id       device id
+# @return   none
+################################################################################
+def _start_Mia_temp_config_2(id):
+
+    skill = MijaSkill(id, "0", "Badezimmer oben", bytearray([0x58, 0x2d, 0x34, 0x38, 0x64, 0x37]))
     skill.start_skill()
     active_skills.append(skill)
     T.trace(__name__, T.INFO, skill.get_skill_name() + " started")
@@ -69,6 +79,13 @@ def _start_multi_sense(id):
     skill.start_skill()
     active_skills.append(skill)
     T.trace(__name__, T.INFO, skill.get_skill_name() + " started")
+
+################################################################################
+# @brief    Initializes and starts all base skills for the multi sensor device
+# @param    id       device id
+# @return   none
+################################################################################
+def _start_base_skills(id):
 
     skill = DhtSkill(id, "0", DHT22_DAT_GPIO, DHT22_PWR_GPIO)
     skill.start_skill()
@@ -113,7 +130,13 @@ def start_skill_manager(id, cap):
     active_skills.append(skill)
     T.trace(__name__, T.INFO, skill.get_skill_name() + ' started')
 
-    _start_multi_sense(id)
+    if _MIA_SENSE_CFG_1 == cap:
+        _start_Mia_temp_config_1(id)
+    elif _MIA_SENSE_CFG_2 == cap:
+        _start_Mia_temp_config_2(id)
+
+    _start_base_skills(id)
+
 
     T.trace(__name__, T.INFO, 'skill manager started...')
 

@@ -89,7 +89,7 @@ class UserSubs:
     ############################################################################
     def subscribe(self):
         subscribe_cb(self)
-        T.trace(__name__, T.INFO, "subscribed to: " + self.topic)
+        T.trace(__name__, T.DEBUG, "subscribed to: " + self.topic)
 
     ############################################################################
     # @brief    this function unsubscribes the topic specified in the object
@@ -98,7 +98,7 @@ class UserSubs:
     ############################################################################
     def unsubscribe(self):
         unsubscribe_cb(self)
-        T.trace(__name__, T.INFO, "unsubscribed to: " + self.topic)
+        T.trace(__name__, T.DEBUG, "unsubscribed to: " + self.topic)
 
     ############################################################################
     # @brief    callback function interface for arrived subscribed topic

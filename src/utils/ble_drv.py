@@ -62,7 +62,7 @@ def ble_append_listener(filter):
         _central = BleDriver(ble)
         _central.scan_for_devices()
 
-    T.trace(__name__, T.INFO, 'append filter: ' + str(filter))
+    T.trace(__name__, T.DEBUG, 'append filter: ' + str(filter))
     _central.append_listener(filter)
 
 ################################################################################
@@ -74,7 +74,7 @@ def ble_remove_listener(filter):
     global _central
 
     if(None != _central):
-        T.trace(__name__, T.INFO, 'remove filter: ' + str(filter))
+        T.trace(__name__, T.DEBUG, 'remove filter: ' + str(filter))
         _central.remove_listener(filter)
         if(0 == _central.get_number_of_filters()):
             T.trace(__name__, T.INFO, 'stop the bluetooth driver')

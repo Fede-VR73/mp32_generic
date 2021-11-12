@@ -46,6 +46,8 @@ def do_user_processes():
     exec_result = True
 
     exec_result = exec_result & check_non_blocking_for_msg()
+    if exec_result == False:
+        T.trace(__name__, T.ERROR, 'bad return from check_non_blocking_for_msg')
     exec_result = exec_result & skill_mgr.execute_skills()
     return exec_result
 
@@ -73,15 +75,15 @@ def do_user_main():
         do_user_initialize()
         while sys_mode.is_normal_mode_active():
             if False == do_user_processes():
-                goto_reset_mode()
+                sys_mode.goto_reset_mode()
             if sys_mode.short_check_for_repl_via_button_request():
-                goto_repl_mode()
+                sys_mode.goto_repl_mode()
         else:
             stop_user_processes()
 
     if sys_mode.is_reset_mode_active():
-        T.trace(__name__, T.DEBUG, 'reset mode...')
+        T.trace(__name__, T.INFO, 'reset mode...')
         reset()
 
     if sys_mode.is_repl_mode_active():
-        T.trace(__name__, T.DEBUG, 'repl mode...')
+        T.trace(__name__, T.INFO, 'repl mode...')
