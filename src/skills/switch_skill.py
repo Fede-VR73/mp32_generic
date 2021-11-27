@@ -27,7 +27,6 @@ import src.utils.trace as T
 _NO_VALUE = 0xff
 _SWITCH_OFF_TIME = 1000
 
-
 SWITCH_SKILL_MODE_POLL = 0
 SWITCH_SKILL_MODE_ISR = 1
 
@@ -40,6 +39,9 @@ _SWITCH_STATE_DICT_INV = {
     _SWITCH_STATE_HIGH: _SWITCH_STATE_LOW,
 
 }
+
+_RESTART_TRIGGER_THRESHOLD = 5
+_RESTART_TRIGGER_TIMEOUT = 10000
 
 
 ################################################################################
@@ -70,6 +72,9 @@ class SwitchSkill(AbstractSkill):
 
     _switch_trigger = _SWITCH_STATE_HIGH
     _switch_state_published = True
+
+    _restart_trigger_cnt = 0
+    _last_trigger_time = 0
 
 
     ############################################################################
@@ -104,6 +109,9 @@ class SwitchSkill(AbstractSkill):
 
         self._switch_trigger = _SWITCH_STATE_LOW
 
+        self._restart_trigger_cnt = 0
+        self._last_trigger_time = 0
+
 
     ############################################################################
     # @brief    starts the skill
@@ -126,20 +134,18 @@ class SwitchSkill(AbstractSkill):
 
         if self._switch_gpio != None:
             new_switch_state = self._switch_gpio.value()
-            T.trace(__name__, T.DEBUG, 'SWITCH signal:' + str(new_switch_state))
             if new_switch_state != self._current_state:
                 self._current_state = new_switch_state
                 T.trace(__name__, T.DEBUG, 'state transition detected...')
                 if new_switch_state == self._switch_trigger:
                     self._publish_state = True
+                    self._inc_restart_trigger()
 
         if self._led_gpio != None:
             if self._led_inf == False:
                 self._led_gpio.value(self._current_state)
-                T.trace(__name__, T.DEBUG, 'led state:' + str(self._current_state))
             else:
                 self._led_gpio.value(_SWITCH_STATE_DICT_INV[self._current_state])
-                T.trace(__name__, T.DEBUG, 'led state:' + str(_SWITCH_STATE_DICT_INV[self._current_state]))
 
     ############################################################################
     # @brief    executes the skill cyclic task
@@ -160,6 +166,35 @@ class SwitchSkill(AbstractSkill):
             self._pub_state.publish('ON')
             self._last_time = current_time
             self._switch_state_published = True
+
+        self._check_for_restart_request()
+
+    ############################################################################
+    # @brief    increment the restart trigger
+    # @return   none
+    ############################################################################
+    def _inc_restart_trigger(self):
+        self._restart_trigger_cnt += 1
+        self._last_trigger_time = time.ticks_ms()
+        T.trace(__name__, T.DEBUG, 'trigger counter:' + str(self._restart_trigger_cnt))
+
+    ############################################################################
+    # @brief    checks for a restart request per switch
+    # @return   none
+    ############################################################################
+    def _check_for_restart_request(self):
+        if self._restart_trigger_cnt > _RESTART_TRIGGER_THRESHOLD:
+            self._restart_trigger_cnt = 0
+            T.trace(__name__, T.INFO, 'restart triggered')
+            import machine
+            machine.reset()
+        else:
+            current_time = time.ticks_ms()
+            if abs(time.ticks_diff(current_time, self._last_trigger_time)) > _RESTART_TRIGGER_TIMEOUT:
+                self._restart_trigger_cnt = 0
+
+
+
 
 
     ############################################################################
